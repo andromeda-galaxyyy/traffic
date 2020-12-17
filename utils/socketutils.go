@@ -13,7 +13,6 @@ func SendByte(ip string,port int,content []byte) (err error)  {
 	}
 	defer conn.Close()
 	_, err = conn.Write(content)
-
 	return err
 }
 

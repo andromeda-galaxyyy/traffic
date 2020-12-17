@@ -1,0 +1,65 @@
+{
+    "count": 0,
+    "pcaps": [
+        {
+            "duration": 13255.196499968,
+            "size": 41732139,
+            "file": "/Volumes/DATA/dataset/voip/captured.voip.pcap"
+        },
+        {
+            "duration": 3929.588484096,
+            "size": 20572304,
+            "file": "/Volumes/DATA/dataset/voip/facebook_Audio.pcap"
+        },
+        {
+            "duration": 4130.683799808,
+            "size": 19439791,
+            "file": "/Volumes/DATA/dataset/voip/Facebook_Voice_Workstation.pcap"
+        },
+        {
+            "duration": 3646.419951872,
+            "size": 24142766,
+            "file": "/Volumes/DATA/dataset/voip/Hangouts_voice_Workstation.pcap"
+        },
+        {
+            "duration": 3607.026538752,
+            "size": 6001307,
+            "file": "/Volumes/DATA/dataset/voip/Skype_Audio.pcap"
+        },
+        {
+            "duration": 3779.002324224,
+            "size": 5929540,
+            "file": "/Volumes/DATA/dataset/voip/Skype_Voice_Workstation.pcap"
+        },
+        {
+            "duration": 4123.038881024,
+            "size": 77183013,
+            "file": "/Volumes/DATA/dataset/voip/VOIP_Facebook_Voice_Gateway.pcap"
+        },
+        {
+            "duration": 3929.582716928,
+            "size": 42820092,
+            "file": "/Volumes/DATA/dataset/voip/VOIP_gate_facebook_Audio.pcap"
+        },
+        {
+            "duration": 3625.025681152,
+            "size": 56861185,
+            "file": "/Volumes/DATA/dataset/voip/VOIP_gate_hangout_audio.pcap"
+        },
+        {
+            "duration": 3608.159393024,
+            "size": 44398739,
+            "file": "/Volumes/DATA/dataset/voip/VOIP_gate_Skype_Audio.pcap"
+        },
+        {
+            "duration": 3649.788898048,
+            "size": 75635478,
+            "file": "/Volumes/DATA/dataset/voip/VOIP_Hangouts_voice_Gateway.pcap"
+        },
+        {
+            "duration": 3774.096804864,
+            "size": 46422754,
+            "file": "/Volumes/DATA/dataset/voip/VOIP_Skype_Voice_Gateway.pcap"
+        }
+    ]
+}

@@ -115,6 +115,7 @@ func processStats(nums []float64) (min, max, mean float64) {
 }
 
 func processFlowStats(ip string, port int, specifier [5]string, stats map[string][]float64) {
+log.Println("process")
 	pktSizes := stats["pkt_size"]
 	idts := stats["idt"]
 	idts = utils.FilterFloat(idts, func(f float64) bool {
@@ -130,6 +131,7 @@ func processFlowStats(ip string, port int, specifier [5]string, stats map[string
 	if len(pktSizes) == 0 {
 		return
 	}
+
 
 	minPktSize, maxPktSize, meanPktSize := processStats(pktSizes)
 	stdvPktSize := stat.StdDev(pktSizes, nil)
@@ -477,6 +479,7 @@ func (g *generator) Start() (err error) {
 									proto,
 								}
 								stats := g.statsToReport[flowId]
+								// log.Println("sent")
 								go processFlowStats(g.ControllerIP, g.ControllerPort, specifier, utils.CopyMap(stats))
 								delete(g.statsToReport, flowId)
 								g.sentRecord.Add(flowId)

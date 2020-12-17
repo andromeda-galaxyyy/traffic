@@ -43,7 +43,7 @@ func main(){
 
 
 	sleep:=flag.Bool("sleep",true,"whether sleep between packets")
-	report:=flag.Bool("report",true,"whether report between packets")
+	report:=flag.Bool("report",false,"whether report between packets")
 	delay:=flag.Bool("delay",true,"whether delay before packet injection")
 	delayTime:=flag.Int("delaytime",100,"delay time")
 	flowType:=flag.Int("ftype",0,"Flow Type")
