@@ -25,8 +25,6 @@ func main(){
 	//for profiling
 
 	debug:=flag.Bool("debug",false,"Enable debug mode")
-
-
 	id:=flag.Int("id",0,"self id")
 	dstIdFn:=flag.String("dst_id","/home/stack/code/graduate/sim/system/traffic/gogen/test/0.hostid","destiantion id file")
 	pktDir:=flag.String("pkts","/home/stack/code/graduate/sim/system/traffic/gogen/pkts/default","pkts dir")
@@ -40,6 +38,8 @@ func main(){
 
 	redisIP:=flag.String("rip", "192.168.1.196","Redis IP address")
 	redisPort:=flag.Int("rport",6379, "Redis Port")
+
+	storeFlowCounter:=flag.Bool("storefcounter",false,"Whether store flow counter")
 
 
 	sleep:=flag.Bool("sleep",true,"whether sleep between packets")
@@ -55,7 +55,7 @@ func main(){
 	target:=flag.Int("target",-1,"If enable force target,the target id")
 	n_workers:=flag.Int("workers",1,"Number of coroutine to generate traffic")
 
-	vlanid:=flag.Int("vlan",0,"Vlan id")
+	vlanid:=flag.Int("vlan",5,"Vlan id")
 
 
 
@@ -227,6 +227,7 @@ func main(){
 			specifiedPktFn: *pktFn,
 			rip:*redisIP,
 			rport:*redisPort,
+			storeFlowCounter: *storeFlowCounter,
 		}
 
 

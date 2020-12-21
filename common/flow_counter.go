@@ -67,7 +67,7 @@ type FCounterReader struct {
 
 func NewDefaultCounterReader(ip string,port int) *FCounterReader {
 	return &FCounterReader{
-		id:utils.NowInMilli(),
+		id:utils.NowInNano(),
 		ip:ip,
 		port:port,
 	}

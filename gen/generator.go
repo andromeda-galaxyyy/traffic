@@ -248,7 +248,7 @@ func (g *generator) Start() (err error) {
 	if g.Delay {
 		time.Sleep(time.Millisecond * time.Duration(rand.Intn(1000)))
 	}
-	//log.Println("Sleep over.DemoStart injection")
+	log.Println("Sleep over Start injection")
 
 	stopped := false
 	for {

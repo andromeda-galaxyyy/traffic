@@ -1,7 +1,9 @@
 package main
 
 import (
+	"chandler.com/gogen/common"
 	"chandler.com/gogen/utils"
+	"github.com/google/gopacket"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -13,9 +15,6 @@ import (
 	"sync/atomic"
 	"syscall"
 	"time"
-
-	"chandler.com/gogen/common"
-	"github.com/google/gopacket"
 )
 
 type controller struct {
@@ -45,6 +44,7 @@ type controller struct {
 	enablePktLossStats bool
 	pktLossDir         string
 	flowType           int
+	storeFlowCounter bool
 
 	counterWriter *common.FCounterWriter
 
@@ -137,35 +137,44 @@ func (c *controller) Init() error {
 		}
 	}()
 
-	c.counterWriter = common.NewDefaultCounterWriter(c.rip, c.rport)
-	err = c.counterWriter.Init()
-	if err != nil {
-		log.Println("Error connect to redis instance,flow counter won't work")
+	if c.storeFlowCounter {
+		c.counterWriter = common.NewDefaultCounterWriter(c.rip, c.rport)
+		err = c.counterWriter.Init()
+		if err != nil {
+			log.Fatalf("Error connect to redis instance,flow counter won't work\n")
+		}
+
+		//start ticker
+		ticker := time.NewTicker(time.Duration(5) * time.Second)
+		go func() {
+
+			//c.counterWriter = common.NewDefaultCounterWriter(c.rip, c.rport)
+			//err = c.counterWriter.Init()
+			//if err != nil {
+			//	log.Println("Error connect to redis instance,flow counter won't work")
+			//	return
+			//}
+			for {
+				select {
+				case <-ticker.C:
+					//collect flow counter and write to redis
+					var res int64
+					for _, g := range c.workers {
+						res += atomic.LoadInt64(&g.flowCounter)
+					}
+					err := c.counterWriter.Write(res)
+					if err != nil {
+						log.Println("Error write flow counter to redis")
+					}
+					continue
+				case <-stopTickerChan:
+					ticker.Stop()
+					return
+				}
+			}
+		}()
 	}
 
-	//start ticker
-	ticker := time.NewTicker(time.Duration(5) * time.Second)
-	go func() {
-		//test
-		for {
-			select {
-			case <-ticker.C:
-				//collect flow counter and write to redis
-				var res int64
-				for _, g := range c.workers {
-					res += atomic.LoadInt64(&g.flowCounter)
-				}
-				err := c.counterWriter.Write(res)
-				if err != nil {
-					log.Println("Error write flow counter to redis")
-				}
-				continue
-			case <-stopTickerChan:
-				ticker.Stop()
-				return
-			}
-		}
-	}()
 
 	return nil
 }
@@ -176,10 +185,13 @@ func (c *controller) Start() error {
 	}
 
 	c.waiter.Wait()
-	err := c.counterWriter.Destroy()
-	if err != nil {
-		log.Println("Error write flow counter to redis")
+	if c.storeFlowCounter{
+		err := c.counterWriter.Destroy()
+		if err != nil {
+			log.Println("Error write flow counter to redis")
+		}
 	}
+
 	log.Println("All work done, controller exits")
 	return nil
 }
