@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"chandler.com/gogen/common"
+	"chandler.com/gogen/models"
 	"chandler.com/gogen/utils"
 	"fmt"
 	"log"
@@ -14,16 +14,16 @@ type pktlosswriter struct {
 	id int
 	flowsPerFile int
 	dir string
-	channel chan *common.FlowDesc
-	cache []*common.FlowDesc
+	channel chan *models.FlowDesc
+	cache []*models.FlowDesc
 }
 
-func NewPktLossWriter(fPerFile int,dir string,channel chan *common.FlowDesc) *pktlosswriter {
+func NewPktLossWriter(fPerFile int,dir string,channel chan *models.FlowDesc) *pktlosswriter {
 	return &pktlosswriter{
 		flowsPerFile: fPerFile,
 		dir:          dir,
 		channel:      channel,
-		cache: make([]*common.FlowDesc,0),
+		cache: make([]*models.FlowDesc,0),
 	}
 }
 
@@ -40,7 +40,7 @@ func (w *pktlosswriter)start()  {
 			fn:=w.generateFn()
 			w.write(w.cache,fn)
 			log.Printf("WriteDelayStats pkt loss stats to file %s\n",fn)
-			w.cache=make([]*common.FlowDesc,0)
+			w.cache=make([]*models.FlowDesc,0)
 		}
 	}
 }
@@ -57,7 +57,7 @@ func (w *pktlosswriter)flush()  {
 
 
 //todo add timeout
-func (w *pktlosswriter)write(flows []*common.FlowDesc,filepath string)  {
+func (w *pktlosswriter)write(flows []*models.FlowDesc,filepath string)  {
 	f,err:=os.Create(filepath)
 	if err!=nil{
 		log.Fatalf("Cannot create file %s",filepath)
@@ -67,7 +67,7 @@ func (w *pktlosswriter)write(flows []*common.FlowDesc,filepath string)  {
 	errors:=make([]error,0)
 
 	bufferWriter:=bufio.NewWriter(f)
-	bufferWriter.WriteString(fmt.Sprintf("%s\n",common.TxLossHeader()))
+	bufferWriter.WriteString(fmt.Sprintf("%s\n", models.TxLossHeader()))
 	for _,f:=range flows{
 		_,err=bufferWriter.WriteString(fmt.Sprintf("%s\n",f.ToTxLossStats()))
 		if err!=nil{
