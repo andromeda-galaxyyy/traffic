@@ -145,6 +145,9 @@ func Filter(dst,src *[]interface{},pred func(e interface{}) bool)  {
 	}
 }
 
+//func Map(dst,src *[]interface{},mapFunc func(e interface{}) interface{})  {
+//
+//}
 
 
 

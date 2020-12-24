@@ -126,6 +126,7 @@ func main()  {
 	router.GET("/flowcounter",GetFlowCounter)
 	router.GET("/telemetry/loss",TelemetryFunc(false))
 	router.GET("/telemetry/delay",TelemetryFunc(true))
+	router.GET("/linkrate",TimestampComplete(),GetLinkRate)
 
 	server:=&http.Server{
 		Addr: fmt.Sprintf(":%d",*serverPort),

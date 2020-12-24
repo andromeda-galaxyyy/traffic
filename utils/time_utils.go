@@ -13,6 +13,10 @@ func NowInNano()int64  {
 	return time.Now().UnixNano()
 }
 
+func NowInSeconds() int64 {
+	return time.Now().UnixNano()/(1e9)
+}
+
 func NowInString()string  {
 	t:=time.Now()
 	return fmt.Sprintf("%d",t.UnixNano())

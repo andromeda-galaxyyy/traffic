@@ -9,10 +9,13 @@ import (
 var (
 	router *gin.Engine
 	invalidRequestJSON=gin.H{
-		"message":"invalid request",
+		"msg":"invalid request",
 	}
 	internalErrorJSON=gin.H{
-		"message":"internal error",
+		"msg":"internal error",
+	}
+	notFoundJSON=gin.H{
+		"msg":"not found",
 	}
 
 	counterReader *models.FCounterReader
