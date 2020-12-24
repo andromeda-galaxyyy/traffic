@@ -2,6 +2,7 @@ package main
 
 import (
 	"chandler.com/gogen/common"
+	"chandler.com/gogen/models"
 	"chandler.com/gogen/utils"
 	"github.com/google/gopacket"
 	"io/ioutil"
@@ -46,7 +47,7 @@ type controller struct {
 	flowType           int
 	storeFlowCounter bool
 
-	counterWriter *common.FCounterWriter
+	counterWriter *models.FCounterWriter
 
 	rip   string
 	rport int
@@ -138,7 +139,7 @@ func (c *controller) Init() error {
 	}()
 
 	if c.storeFlowCounter {
-		c.counterWriter = common.NewDefaultCounterWriter(c.rip, c.rport)
+		c.counterWriter = models.NewDefaultCounterWriter(c.rip, c.rport)
 		err = c.counterWriter.Init()
 		if err != nil {
 			log.Fatalf("Error connect to redis instance,flow counter won't work\n")
@@ -149,7 +150,7 @@ func (c *controller) Init() error {
 		go func() {
 
 			//c.counterWriter = common.NewDefaultCounterWriter(c.rip, c.rport)
-			//err = c.counterWriter.Init()
+			//err = c.counterWriter.init()
 			//if err != nil {
 			//	log.Println("Error connect to redis instance,flow counter won't work")
 			//	return

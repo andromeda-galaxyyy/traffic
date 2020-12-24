@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"chandler.com/gogen/common"
+	"chandler.com/gogen/models"
 	"chandler.com/gogen/utils"
 	"fmt"
 	"log"
@@ -27,11 +28,11 @@ type writer struct {
 
 	numItemsPerFile  int64
 	dirnameGenerator DirNameGenerator
-	delayChannel     chan *common.FlowDesc
-	lossChannel      chan *common.FlowDesc
+	delayChannel     chan *models.FlowDesc
+	lossChannel      chan *models.FlowDesc
 
-	delayCache []*common.FlowDesc
-	lossCache []*common.FlowDesc
+	delayCache []*models.FlowDesc
+	lossCache []*models.FlowDesc
 
 	sigChan            chan common.Signal
 }
@@ -45,8 +46,8 @@ func NewWriter(id int, delayBaseDir string,lossBaseDir string,itemsPerFile int64
 		delayStatsDir:   delayBaseDir,
 		pktLossStatsDir: lossBaseDir,
 		numItemsPerFile: itemsPerFile,
-		delayCache:      make([]*common.FlowDesc,0),
-		lossCache: make([]*common.FlowDesc,0),
+		delayCache:      make([]*models.FlowDesc,0),
+		lossCache: make([]*models.FlowDesc,0),
 	}
 
 	return w
@@ -70,8 +71,8 @@ func (w *writer) FlushDelayStats()  {
 		fn:=path.Join(w.pktLossStatsDir,filename)
 		w.writePktLossStats(w.lossCache,fn)
 	}
-	w.delayCache =make([]*common.FlowDesc,0)
-	w.lossCache=make([]*common.FlowDesc,0)
+	w.delayCache =make([]*models.FlowDesc,0)
+	w.lossCache=make([]*models.FlowDesc,0)
 }
 
 func (w *writer)FlushLossStats()  {
@@ -83,7 +84,7 @@ func (w *writer)FlushLossStats()  {
 	filename:=fmt.Sprintf("%d.%d.%s.%s",lid,w.id,utils.NowInString(),"loss")
 	fn:=path.Join(w.pktLossStatsDir,filename)
 	w.writePktLossStats(w.lossCache,fn)
-	w.lossCache=make([]*common.FlowDesc,0)
+	w.lossCache=make([]*models.FlowDesc,0)
 }
 
 func (w *writer)Flush()  {
@@ -92,7 +93,7 @@ func (w *writer)Flush()  {
 }
 
 
-func (w *writer) acceptDelayDesc(f *common.FlowDesc){
+func (w *writer) acceptDelayDesc(f *models.FlowDesc){
 	if nil==f{
 		return
 	}
@@ -101,12 +102,12 @@ func (w *writer) acceptDelayDesc(f *common.FlowDesc){
 		fn:=path.Join(w.delayStatsDir,fmt.Sprintf("%d.%d.%s.%s",lid,w.id,utils.NowInString(),"delay"))
 		//log.Printf("WriteDelayStats pkt delay stats to file %s\n",fn)
 		w.writeDelayStats(w.delayCache,fn)
-		w.delayCache =make([]*common.FlowDesc,0)
+		w.delayCache =make([]*models.FlowDesc,0)
 	}
 }
 
 
-func (w *writer) acceptLossDesc(f *common.FlowDesc){
+func (w *writer) acceptLossDesc(f *models.FlowDesc){
 	if nil==f{
 		return
 	}
@@ -115,7 +116,7 @@ func (w *writer) acceptLossDesc(f *common.FlowDesc){
 		fn:=path.Join(w.pktLossStatsDir,fmt.Sprintf("%d.%d.%s.%s",lid,w.id,utils.NowInString(),"loss"))
 		//log.Printf("WriteDelayStats pkt loss stats to file %s\n",fn)
 		w.writePktLossStats(w.lossCache,fn)
-		w.lossCache =make([]*common.FlowDesc,0)
+		w.lossCache =make([]*models.FlowDesc,0)
 	}
 }
 
@@ -176,7 +177,7 @@ func (w *writer) Start()  {
 }
 
 //perform writeDelayStats
-func (w *writer) writeDelayStats(flows [] *common.FlowDesc, delayStatsFn string) {
+func (w *writer) writeDelayStats(flows [] *models.FlowDesc, delayStatsFn string) {
 	errors := make([]error, 0)
 
 	delayStatsFp, err := os.Create(delayStatsFn)
@@ -187,7 +188,7 @@ func (w *writer) writeDelayStats(flows [] *common.FlowDesc, delayStatsFn string)
 
 
 	delayWriter := bufio.NewWriter(delayStatsFp)
-	delayWriter.WriteString(fmt.Sprintf("%s\n",common.RxDelayStatsHeader()))
+	delayWriter.WriteString(fmt.Sprintf("%s\n", models.RxDelayStatsHeader()))
 	for _, f := range flows {
 		_, err = delayWriter.WriteString(fmt.Sprintf("%s\n", f.ToDelayStats()))
 		if err != nil {
@@ -200,7 +201,7 @@ func (w *writer) writeDelayStats(flows [] *common.FlowDesc, delayStatsFn string)
 	}
 }
 
-func (w *writer) writePktLossStats(flows [] *common.FlowDesc,pktLossStatsFn string) {
+func (w *writer) writePktLossStats(flows [] *models.FlowDesc,pktLossStatsFn string) {
 	errors := make([]error, 0)
 
 	pktLossStatsFp,err:=os.Create(pktLossStatsFn)
@@ -210,7 +211,7 @@ func (w *writer) writePktLossStats(flows [] *common.FlowDesc,pktLossStatsFn stri
 	defer pktLossStatsFp.Close()
 	pktLossWriter:=bufio.NewWriter(pktLossStatsFp)
 
-	pktLossWriter.WriteString(fmt.Sprintf("%s\n",common.RxLossHeader()))
+	pktLossWriter.WriteString(fmt.Sprintf("%s\n", models.RxLossHeader()))
 
 	for _, f := range flows {
 		_,err=pktLossWriter.WriteString(fmt.Sprintf("%s\n",f.ToRxLossStats()))

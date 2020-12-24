@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chandler.com/gogen/common"
+	"chandler.com/gogen/models"
 	"chandler.com/gogen/utils"
 	"context"
 	"fmt"
@@ -61,8 +61,8 @@ func GetDelayBetween(c *gin.Context)  {
 			}
 			tmp_res:=make([]interface{},0)
 			for _,val:=range vals{
-				desc:=&common.FlowDesc{}
-				err=common.DescFromDelayStats(desc,val)
+				desc:=&models.FlowDesc{}
+				err= models.DescFromDelayStats(desc,val)
 				if err!=nil{
 					c.JSON(http.StatusInternalServerError,internalErrorJSON)
 					return
@@ -77,7 +77,7 @@ func GetDelayBetween(c *gin.Context)  {
 					return
 				}
 				utils.Filter(&filtered,&tmp_res, func(e interface{}) bool {
-					desc:=e.(*common.FlowDesc)
+					desc:=e.(*models.FlowDesc)
 					did,_:=utils.IdFromIP(desc.DstIP)
 					if did==expectedDestId{
 						return true
@@ -88,9 +88,9 @@ func GetDelayBetween(c *gin.Context)  {
 				filtered=tmp_res
 			}
 			log.Println(len(filtered))
-			res:=make([]*common.FlowDesc,0)
+			res:=make([]*models.FlowDesc,0)
 			for _,d:=range filtered{
-				res=append(res,d.(*common.FlowDesc))
+				res=append(res,d.(*models.FlowDesc))
 			}
 			c.JSON(http.StatusOK,gin.H{
 				"num":len(res),
@@ -107,10 +107,10 @@ func GetDelayBetween(c *gin.Context)  {
 				c.JSON(http.StatusInternalServerError,internalErrorJSON)
 				return
 			}
-			res:=make([]*common.FlowDesc,0)
+			res:=make([]*models.FlowDesc,0)
 			for _,v:=range vals{
-				desc:=&common.FlowDesc{}
-				common.DescFromDelayStats(desc,v)
+				desc:=&models.FlowDesc{}
+				models.DescFromDelayStats(desc,v)
 				res=append(res,desc)
 			}
 			c.JSON(http.StatusOK,gin.H{
@@ -169,8 +169,8 @@ func GetLossBetween(c *gin.Context)  {
 			}
 			tmp_res:=make([]interface{},0)
 			for _,val:=range vals{
-				desc:=&common.FlowDesc{}
-				err=common.DescFromRxLossStats(desc,val)
+				desc:=&models.FlowDesc{}
+				err= models.DescFromRxLossStats(desc,val)
 				if err!=nil{
 					c.JSON(http.StatusInternalServerError,internalErrorJSON)
 					return
@@ -185,7 +185,7 @@ func GetLossBetween(c *gin.Context)  {
 					return
 				}
 				utils.Filter(&filtered,&tmp_res, func(e interface{}) bool {
-					desc:=e.(*common.FlowDesc)
+					desc:=e.(*models.FlowDesc)
 					did,_:=utils.IdFromIP(desc.DstIP)
 					if did==expectedDestId{
 						return true
@@ -196,9 +196,9 @@ func GetLossBetween(c *gin.Context)  {
 				filtered=tmp_res
 			}
 			log.Println(len(filtered))
-			res:=make([]*common.FlowDesc,0)
+			res:=make([]*models.FlowDesc,0)
 			for _,d:=range filtered{
-				res=append(res,d.(*common.FlowDesc))
+				res=append(res,d.(*models.FlowDesc))
 			}
 			c.JSON(http.StatusOK,gin.H{
 				"num":len(res),
@@ -215,10 +215,10 @@ func GetLossBetween(c *gin.Context)  {
 				c.JSON(http.StatusInternalServerError,internalErrorJSON)
 				return
 			}
-			res:=make([]*common.FlowDesc,0)
+			res:=make([]*models.FlowDesc,0)
 			for _,v:=range vals{
-				desc:=&common.FlowDesc{}
-				common.DescFromRxLossStats(desc,v)
+				desc:=&models.FlowDesc{}
+				models.DescFromRxLossStats(desc,v)
 				res=append(res,desc)
 			}
 			c.JSON(http.StatusOK,gin.H{

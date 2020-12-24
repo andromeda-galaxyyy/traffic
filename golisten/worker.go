@@ -2,6 +2,7 @@ package main
 
 import (
 	"chandler.com/gogen/common"
+	"chandler.com/gogen/models"
 	"chandler.com/gogen/utils"
 	"fmt"
 	"github.com/google/gopacket"
@@ -24,12 +25,12 @@ type worker struct {
 	seqRecord map[[5]string]int64
 
 	//writer channel
-	delayChannel       chan *common.FlowDesc
-	lossChannel chan *common.FlowDesc
+	delayChannel       chan *models.FlowDesc
+	lossChannel chan *models.FlowDesc
 
 	//delay和loss是两个数据结构
-	fiveTupleToFDescForDelay map[[5]string]*common.FlowDesc
-	fiveTupleToFDescForLoss map[[5]string] *common.FlowDesc
+	fiveTupleToFDescForDelay map[[5]string]*models.FlowDesc
+	fiveTupleToFDescForLoss map[[5]string] *models.FlowDesc
 
 	enablePktLossStats       bool
 
@@ -49,10 +50,10 @@ type worker struct {
 // 应该可以放到writer，但是这里放到了worker处
 // 考虑到writer的职责应该尽量单一，状态维护放到worker处
 func (w *worker) Init(){
-	w.fiveTupleToFDescForDelay =make(map[[5]string]*common.FlowDesc)
-	w.fiveTupleToFDescForLoss=make(map[[5]string]*common.FlowDesc)
-	w.delayChannel =make(chan *common.FlowDesc,102400)
-	w.lossChannel=make(chan *common.FlowDesc,102400)
+	w.fiveTupleToFDescForDelay =make(map[[5]string]*models.FlowDesc)
+	w.fiveTupleToFDescForLoss=make(map[[5]string]*models.FlowDesc)
+	w.delayChannel =make(chan *models.FlowDesc,102400)
+	w.lossChannel=make(chan *models.FlowDesc,102400)
 
 	w.flowWriter=NewDefaultWriter(w.id)
 
@@ -155,7 +156,7 @@ func (w *worker) processPacket(packet *gopacket.Packet) {
 	delayOrSeqNum :=utils.BytesToInt64(l4Payload[:8])
 
 	if _,exists:= w.fiveTupleToFDescForDelay[specifier];!exists{
-		w.fiveTupleToFDescForDelay[specifier]=&common.FlowDesc{
+		w.fiveTupleToFDescForDelay[specifier]=&models.FlowDesc{
 			SrcIP:           sip,
 			SrcPort:         sp,
 			DstIP:           dip,
@@ -175,7 +176,7 @@ func (w *worker) processPacket(packet *gopacket.Packet) {
 	}
 
 	if _,exits:=w.fiveTupleToFDescForLoss[specifier];!exits{
-		w.fiveTupleToFDescForLoss[specifier]=&common.FlowDesc{
+		w.fiveTupleToFDescForLoss[specifier]=&models.FlowDesc{
 			SrcIP:           sip,
 			SrcPort:         sp,
 			DstIP:           dip,
@@ -281,7 +282,7 @@ func (w *worker) start(packetChannel chan gopacket.Packet, wg *sync.WaitGroup) {
 
 				//reset data structure
 				w.flowDelay=make(map[[5]string][]int64)
-				w.fiveTupleToFDescForDelay =make(map[[5]string]*common.FlowDesc)
+				w.fiveTupleToFDescForDelay =make(map[[5]string]*models.FlowDesc)
 				w.workerToWriterSigChan<-common.FlushSignal
 				continue
 			case sig:=<-w.sigChan:
@@ -336,7 +337,7 @@ only implement period loss now
 如果2 Seq包乱序，Seq先于数据包出现，那么可以根据已经统计的包的数量通过roundup估计出来
 如果更复杂的情况出现，无法估计
  */
-func computeLoss(desc *common.FlowDesc, lastSeqNum int64,currSeqNum int64)(float64,error){
+func computeLoss(desc *models.FlowDesc, lastSeqNum int64,currSeqNum int64)(float64,error){
 	estimated1 :=100*(currSeqNum-lastSeqNum)
 
 	return 1-float64(desc.PeriodPackets)/float64(estimated1),nil
@@ -346,7 +347,7 @@ func computeLoss(desc *common.FlowDesc, lastSeqNum int64,currSeqNum int64)(float
 
 
 
-func (w *worker) processPktStats(desc *common.FlowDesc,delays []int64) {
+func (w *worker) processPktStats(desc *models.FlowDesc,delays []int64) {
 	//find min,max,average,stdvar
 	min := int64(math.MaxInt64)
 	max := int64(math.MinInt64)

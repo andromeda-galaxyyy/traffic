@@ -26,8 +26,8 @@ func main(){
 
 	debug:=flag.Bool("debug",false,"Enable debug mode")
 	id:=flag.Int("id",0,"self id")
-	dstIdFn:=flag.String("dst_id","/home/stack/code/graduate/sim/system/traffic/gogen/test/0.hostid","destiantion id file")
-	pktDir:=flag.String("pkts","/home/stack/code/graduate/sim/system/traffic/gogen/pkts/default","pkts dir")
+	dstIdFn:=flag.String("dst_id","/home/stack/code/graduate/sim/traffic/test/0.hostid","destiantion id file")
+	pktDir:=flag.String("pkts","/home/stack/code/graduate/sim/traffic/pkts/default","pkts dir")
 	pktFn:=flag.String("pktsfn","","Specify a pkts file to use")
 	mtu:=flag.Int("mtu",1500,"Interface MTU")
 	emptyPktSize:=flag.Int("emppkt",64,"Empty Layer4 Packet Size in bytes")
@@ -195,7 +195,7 @@ func main(){
 		//	fType: fType,
 		//}
 		//
-		//generator.Init()
+		//generator.init()
 		//err=generator.Start()
 		//if err!=nil{
 		//	log.Fatalln(err)

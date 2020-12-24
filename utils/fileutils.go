@@ -74,3 +74,6 @@ func GetCreatetimeInNano(fn string)(int64,error)  {
 
 
 
+func RMFile(fn string) error  {
+	return os.Remove(fn)
+}

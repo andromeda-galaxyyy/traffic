@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chandler.com/gogen/common"
+	"chandler.com/gogen/models"
 	"chandler.com/gogen/utils"
 	"fmt"
 	"github.com/google/gopacket"
@@ -68,8 +68,8 @@ type generator struct {
 	stopChannel chan struct{}
 
 	flowIDToFiveTuple map[int][5]string
-	flowIDToFlowDesc  map[int]*common.FlowDesc
-	writerChan        chan *common.FlowDesc
+	flowIDToFlowDesc  map[int]*models.FlowDesc
+	writerChan        chan *models.FlowDesc
 	writer            *pktlosswriter
 
 	flowIdToSeq map[int]int64
@@ -297,7 +297,7 @@ func (g *generator) Start() (err error) {
 				log.Println("generator stop requested")
 				stopped = true
 				g.flushPktLossStats()
-				g.flowIDToFlowDesc=make(map[int]*common.FlowDesc)
+				g.flowIDToFlowDesc=make(map[int]*models.FlowDesc)
 				break
 			default:
 				{
@@ -492,7 +492,7 @@ func (g *generator) Start() (err error) {
 
 					if g.enablePktLossStats {
 						if _, exists := g.flowIDToFlowDesc[flowId]; !exists {
-							fd := &common.FlowDesc{
+							fd := &models.FlowDesc{
 								SrcIP:           g.ipStr,
 								SrcPort:         srcPort,
 								DstIP:           dstIPStr,
@@ -565,7 +565,7 @@ func (g *generator) Init() {
 	//g.flowId2Port=make(map[int][2]int)
 	g.stopChannel = make(chan struct{})
 	g.flowIDToFiveTuple = make(map[int][5]string)
-	g.flowIDToFlowDesc=make(map[int]*common.FlowDesc)
+	g.flowIDToFlowDesc=make(map[int]*models.FlowDesc)
 	g.flowCounter=0
 
 	//register signal
@@ -581,7 +581,7 @@ func (g *generator) Init() {
 
 	if g.enablePktLossStats {
 
-		g.writerChan = make(chan *common.FlowDesc, 10240)
+		g.writerChan = make(chan *models.FlowDesc, 10240)
 		g.writer = NewPktLossWriter(1024, g.pktLossDir, g.writerChan)
 		//start writer
 		go func() {

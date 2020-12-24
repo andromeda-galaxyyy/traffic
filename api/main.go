@@ -2,6 +2,7 @@ package main
 
 import (
 	"chandler.com/gogen/common"
+	"chandler.com/gogen/models"
 	"context"
 	"flag"
 	"fmt"
@@ -21,7 +22,7 @@ var (
 )
 
 func setUpFlowCounterReader(ip string,port int)error  {
-	counterReader=common.NewDefaultCounterReader(ip,port)
+	counterReader= models.NewDefaultCounterReader(ip,port)
 	err:=counterReader.Init()
 	return err
 

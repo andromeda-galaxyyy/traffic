@@ -6,3 +6,4 @@
 (cd ./api &&go  build -o ../bin/api && cp ../bin/api /tmp/api)
 (cd ./collector &&go  build -o ../bin/collector && cp ../bin/collector /tmp/collector)
 (cd ./classifier && go build -o ../bin/classifier && cp ../bin/classifier /tmp/classifier)
+(cd ./bin && cp ./* /home/stack/code/graduate/sim/system/traffic/gogen/bin/)

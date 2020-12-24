@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chandler.com/gogen/common"
+	"chandler.com/gogen/models"
 	"github.com/gin-gonic/gin"
 	// "github.com/go-redis/redis/v8"
 )
@@ -15,7 +15,7 @@ var (
 		"message":"internal error",
 	}
 
-	counterReader *common.FCounterReader
+	counterReader *models.FCounterReader
 )
 
 
