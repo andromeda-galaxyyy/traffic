@@ -37,17 +37,13 @@ func (handler *LinkRateHandler) StoreSingleRate(rate *models.Rate,weight int64) 
 
 
 func (store *LinkRateHandler)init() error  {
-	log.Println("init")
-	log.Println(store.redis)
-	store.redis=redis.NewClient(&redis.Options{
-		Addr:fmt.Sprintf("%s:%d",store.ip,store.port),
-		Password: "",
-		DB:6,
-	})
-	_,err:=store.redis.Ping(context.Background()).Result()
+	client,err:=utils.NewRedisClient(store.ip,store.port,6)
 	if err!=nil{
-		return nil
+		log.Fatalf("error connect redis instance %s:%d",store.ip,store.port)
 	}
+	log.Println("link rate handler set up redis client")
+	store.redis=client
+
 	go func() {
 		log.Println("link rate handler worker started")
 		if store.redis!=nil{
