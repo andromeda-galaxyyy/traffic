@@ -119,7 +119,7 @@ log.Println("process")
 	pktSizes := stats["pkt_size"]
 	idts := stats["idt"]
 	idts = utils.FilterFloat(idts, func(f float64) bool {
-		return f > 0
+		return f >= 0
 	})
 	if len(idts) == 0 {
 		return
