@@ -14,18 +14,34 @@ type controller struct {
 	wg *sync.WaitGroup
 	nWorkers int
 	workers []*worker
+	packager *packager
+	classifierIp string
+	classifierPort int
+
 }
 
 func (c *controller)init()  {
+	var err error
+	defaultLoader,err=newLoader(c.pktDir)
+	if err!=nil{
+		log.Fatal(err)
+	}
+	err=defaultLoader.load(defaultLabeler)
+	if err!=nil{
+		log.Fatal(err)
+	}
+	c.packager=NewPackager(c.classifierIp,c.classifierPort)
+
+
 	c.wg=&sync.WaitGroup{}
 	c.wg.Add(c.nWorkers)
 	c.workers=make([]*worker,0)
 	for i:=0;i<c.nWorkers;i++{
 		c.workers=append(c.workers,&worker{
 			id:              i,
-			pkts_dir:        "",
 			doneChan:        make(chan common.Signal,1),
 			wg: c.wg,
+			flowDescs: c.packager.flowDescs,
 		})
 	}
 	sigs:=make(chan os.Signal,1)
@@ -42,11 +58,13 @@ func (c *controller)init()  {
 }
 
 func (c *controller)start()  {
+	go c.packager.Start()
 	for _,w:=range c.workers{
 		w.reset()
 		go w.start()
 	}
 	c.wg.Wait()
+	c.packager.Stop()
 	log.Println("Controller exit")
 }
 

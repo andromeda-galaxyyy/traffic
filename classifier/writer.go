@@ -1,8 +1,7 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"chandler.com/gogen/utils"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -21,16 +20,9 @@ func newDefaultRedisWriter(ip string,port int) *redisWriter {
 }
 
 func (writer *redisWriter)Init()(err error)  {
-	writer.handle=redis.NewClient(&redis.Options{
-		Addr: fmt.Sprintf("%s:%d",writer.ip,writer.port),
-		Password: "",
-		DB:6,
-	})
-	ctx:=context.Background()
-	_,err=writer.handle.Ping(ctx).Result()
+	writer.handle,err=utils.NewRedisClient(writer.ip,writer.port,6)
 	if err!=nil{
-		fmt.Println("error when connect to redis instance")
-		return err
+
 	}
 	return nil
 }
