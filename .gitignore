@@ -7,3 +7,4 @@ bin
 *.pkts
 pkts/
 *.json
+*.sh

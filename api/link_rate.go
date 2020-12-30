@@ -1,12 +1,10 @@
 package main
 
 import (
-	"chandler.com/gogen/utils"
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -14,11 +12,11 @@ import (
 var linkRateRedisHandle *redis.Client
 
 func init()  {
-	var err error
-	linkRateRedisHandle,err=utils.NewRedisClient("10.211.55.2",6379,6)
-	if err!=nil{
-		log.Fatalln(err)
-	}
+	//var err error
+	//linkRateRedisHandle,err=utils.NewRedisClient("10.211.55.1",6379,6)
+	//if err!=nil{
+	//	log.Fatalln(err)
+	//}
 
 }
 
