@@ -5,6 +5,7 @@ import (
 	"log"
 	"testing"
 )
+
 func TestNetUtils_GenerateIP(t *testing.T)  {
 	ids:=[]int{1,2,3,4,5,6,7,254,255,256,10000}
 	for _,id:=range ids{

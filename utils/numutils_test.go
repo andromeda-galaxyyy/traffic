@@ -33,3 +33,12 @@ func TestGetBit(t *testing.T) {
 	fmt.Println(GetBit(b,7)==0)
 }
 
+
+func TestInt64ToBytes2(t *testing.T) {
+	x:=-1
+	toBytes:=Int64ToBytes(int64(x))
+	y:=BytesToInt64(toBytes)
+	fmt.Println(y)
+
+}
+

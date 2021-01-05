@@ -98,7 +98,8 @@ func base16(num int) string{
 		if left<10{
 			res=append(res,fmt.Sprintf("%d",left) )
 		}else{
-			res=append(res,string(left-10+int(char)))
+			//res=append(res,string(left-10+int(char)))
+			res=append(res,string(rune(left-10+int(char))))
 		}
 	}
 	reverse(res)
