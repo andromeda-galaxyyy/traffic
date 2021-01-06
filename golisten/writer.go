@@ -57,21 +57,21 @@ func NewDefaultWriter(id int)*writer {
 }
 
 func (w *writer) FlushDelayStats()  {
-	if len(w.delayCache)==0&&len(w.lossCache)==0{
-		//log.Printf("writer :%d,No need to completeFlush\n",w.id)
+	if len(w.delayCache)==0{
+		//log.Println("Noting to do when flush delay stats")
 		return
 	}
 	filename:=fmt.Sprintf("%d.%d.%s.%s",lid,w.id,utils.NowInString(),"delay")
 	fn:=path.Join(w.delayStatsDir,filename)
 	w.writeDelayStats(w.delayCache,fn)
 
-	if enablePktLossStats{
-		filename:=fmt.Sprintf("%d.%d.%s.%s",lid,w.id,utils.NowInString(),"loss")
-		fn:=path.Join(w.pktLossStatsDir,filename)
-		w.writePktLossStats(w.lossCache,fn)
-	}
+	//if enablePktLossStats{
+	//	filename:=fmt.Sprintf("%d.%d.%s.%s",lid,w.id,utils.NowInString(),"loss")
+	//	fn:=path.Join(w.pktLossStatsDir,filename)
+	//	w.writePktLossStats(w.lossCache,fn)
+	//}
 	w.delayCache =make([]*common.FlowDesc,0)
-	w.lossCache=make([]*common.FlowDesc,0)
+	//w.lossCache=make([]*common.FlowDesc,0)
 }
 
 func (w *writer)FlushLossStats()  {
@@ -87,6 +87,7 @@ func (w *writer)FlushLossStats()  {
 }
 
 func (w *writer)Flush()  {
+	//log.Println("Periodical flush")
 	w.FlushDelayStats()
 	w.FlushLossStats()
 }
@@ -192,6 +193,7 @@ func (w *writer) writeDelayStats(flows [] *common.FlowDesc, delayStatsFn string)
 		_, err = delayWriter.WriteString(fmt.Sprintf("%s\n", f.ToDelayStats()))
 		if err != nil {
 			errors = append(errors, err)
+			log.Fatalln(err)
 		}
 	}
 	err = delayWriter.Flush()
