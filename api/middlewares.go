@@ -14,7 +14,7 @@ func TimestampComplete() gin.HandlerFunc  {
 		var err error
 		toStr,ok:=c.GetQuery("to")
 		if !ok{
-			to=utils.NowInMilli()
+			to=utils.NowInSeconds()
 		}else{
 			to,err=strconv.ParseInt(toStr,10,64)
 			if err!=nil{
