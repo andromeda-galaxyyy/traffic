@@ -154,7 +154,7 @@ func (p *packager)queryAndStore(ip string,port int,cache []*flowDesc)  {
 		if err!=nil{
 			log.Printf("unable to marshal test case %s\n",test)
 		}
-		err=p.redisHandle.ZAdd(context.Background(),fmt.Sprintf("%d",test.Ts),&redis.Z{
+		err=p.redisHandle.ZAdd(context.Background(),fmt.Sprintf("classifier_test"),&redis.Z{
 			Score: float64(test.Ts),
 			Member: testStr,
 		}).Err()
