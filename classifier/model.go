@@ -23,20 +23,25 @@ type result struct {
 
 
 
-type stats struct {
+type testStats struct {
 	Ts int64 `json:"ts"`
-	NInstance int64 `json:"n_instance"`
+	NInstance int `json:"n_instance"`
 	FalsePositive float64 `json:"false_positive"`
 	FalseNegative float64 `json:"false_negative"`
 	TruePositive float64 `json:"true_positive"`
 	TrueNegative float64 `json:"true_negative"`
 
+	PositivePredictValue float64 `json:"positive_predict_value"`
+	FalseDiscoveryRate float64 `json:"false_discovery_rate"`
+	NegativePredictValue float64 `json:"negative_predict_value"`
+	FalseOmissionRate float64 `json:"false_omission_rate"`
+
 }
 
-func (s *stats)marshal() ([]byte,error)  {
+func (s *testStats)marshal() ([]byte,error)  {
 	return json.Marshal(*s)
 }
-func (s *stats)unbox(data []byte) error  {
+func (s *testStats)unbox(data []byte) error  {
 	return json.Unmarshal(data,s)
 }
 

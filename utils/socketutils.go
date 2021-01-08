@@ -33,7 +33,7 @@ func SendMap(ip string,port int,content map[string]interface{}) error  {
 
 // send and wait for response
 func SendAndRecv(ip string,port int,content []byte,delim byte) (string,error){
-	conn,err:=net.Dial("tcp",fmt.Sprintf("%s:%s",ip,port))
+	conn,err:=net.Dial("tcp",fmt.Sprintf("%s:%d",ip,port))
 	if err!=nil{
 		log.Println("error when dial")
 		return "",err

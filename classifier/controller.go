@@ -17,8 +17,17 @@ type controller struct {
 	packager *packager
 	classifierIp string
 	classifierPort int
+	redisIp string
+	redisPort int
+	redisDB int
 
+	intf string
+	selfId int
+	targetId int
+	payloadPktSize int
 }
+
+
 
 func (c *controller)init()  {
 	var err error
@@ -31,6 +40,7 @@ func (c *controller)init()  {
 		log.Fatal(err)
 	}
 	c.packager=NewPackager(c.classifierIp,c.classifierPort)
+	c.packager.setupRedis(c.redisIp,c.redisPort,c.redisDB)
 
 
 	c.wg=&sync.WaitGroup{}
@@ -42,7 +52,15 @@ func (c *controller)init()  {
 			doneChan:        make(chan common.Signal,1),
 			wg: c.wg,
 			flowDescs: c.packager.flowDescs,
+
+			intf: c.intf,
+			selfId: c.selfId,
+			targetId: c.targetId,
+			payloadPerPacketSize: c.payloadPktSize,
 		})
+	}
+	for i:=0;i<c.nWorkers;i++{
+		c.workers[i].Init()
 	}
 	sigs:=make(chan os.Signal,1)
 	signal.Notify(sigs,syscall.SIGINT,syscall.SIGTERM,syscall.SIGKILL)
