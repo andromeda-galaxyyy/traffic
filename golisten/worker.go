@@ -357,9 +357,9 @@ func (w *worker) processPktStats(desc *models.FlowDesc,delays []int64) {
 	count:=0
 
 	for _, v := range delays {
-		if v<=0{
-			continue
-		}
+		//if v<=0{
+		//	continue
+		//}
 		count+=1
 		if v > max {
 			max = v
@@ -375,9 +375,9 @@ func (w *worker) processPktStats(desc *models.FlowDesc,delays []int64) {
 
 	mean/=float64(count)
 	for _, v := range delays {
-		if v<=0{
-			continue
-		}
+		//if v<=0{
+		//	continue
+		//}
 		d := float64(v)
 		diff := d - mean
 		s += diff * diff
