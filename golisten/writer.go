@@ -66,13 +66,13 @@ func (w *writer) FlushDelayStats()  {
 	fn:=path.Join(w.delayStatsDir,filename)
 	w.writeDelayStats(w.delayCache,fn)
 
-	if enablePktLossStats{
-		filename:=fmt.Sprintf("%d.%d.%s.%s",lid,w.id,utils.NowInString(),"loss")
-		fn:=path.Join(w.pktLossStatsDir,filename)
-		w.writePktLossStats(w.lossCache,fn)
-	}
+	//if enablePktLossStats{
+	//	filename:=fmt.Sprintf("%d.%d.%s.%s",lid,w.id,utils.NowInString(),"loss")
+	//	fn:=path.Join(w.pktLossStatsDir,filename)
+	//	w.writePktLossStats(w.lossCache,fn)
+	//}
 	w.delayCache =make([]*models.FlowDesc,0)
-	w.lossCache=make([]*models.FlowDesc,0)
+	//w.lossCache=make([]*models.FlowDesc,0)
 }
 
 func (w *writer)FlushLossStats()  {
