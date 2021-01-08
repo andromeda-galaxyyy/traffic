@@ -142,7 +142,7 @@ func (p *packager)queryAndStore(ip string,port int,cache []*flowDesc)  {
 		}
 
 		test:=&testStats{
-			Ts:            utils.NowInMilli(),
+			Ts:            utils.NowInSeconds(),
 			NInstance:     len(cache),
 			FalsePositive: fp,
 			FalseNegative: fn,
