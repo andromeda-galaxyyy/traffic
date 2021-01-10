@@ -2,6 +2,7 @@ package main
 
 import (
 	"chandler.com/gogen/common"
+	"chandler.com/gogen/models"
 	"chandler.com/gogen/utils"
 	"context"
 	"encoding/json"
@@ -141,7 +142,7 @@ func (p *packager)queryAndStore(ip string,port int,cache []*flowDesc)  {
 			tn=float64(n_tn)/float64(n_tn+n_fp)
 		}
 
-		test:=&testStats{
+		test:=&models.TestStats{
 			Ts:            utils.NowInSeconds(),
 			NInstance:     len(cache),
 			FalsePositive: fp,
@@ -149,8 +150,7 @@ func (p *packager)queryAndStore(ip string,port int,cache []*flowDesc)  {
 			TruePositive:  tp,
 			TrueNegative:  tn,
 		}
-		//todo write to redis
-		testStr,err:=test.marshal()
+		testStr,err:=test.Box()
 		if err!=nil{
 			log.Printf("unable to marshal test case %s\n",test)
 		}
