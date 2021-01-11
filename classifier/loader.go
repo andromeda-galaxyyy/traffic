@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 var (
@@ -20,7 +21,8 @@ type loader struct {
 	dir             string
 	labels          map[string]flowType
 	files           []string
-	duplicateFactor float64
+	labeledFiles map[flowType][]string
+	duplicateFactor int
 }
 
 
@@ -32,8 +34,13 @@ func newLoader(dir string) (l *loader,err error){
 		dir:    dir,
 		labels: make(map[string]flowType),
 		files: make([]string,0),
-		duplicateFactor: 3,
+		duplicateFactor: 20,
 	}
+	l.labeledFiles=make(map[flowType][]string)
+	l.labeledFiles[video]=make([]string,0)
+	l.labeledFiles[iot]=make([]string,0)
+	l.labeledFiles[voip]=make([]string,0)
+	l.labeledFiles[ar]=make([]string,0)
 	return l,nil
 }
 
@@ -69,12 +76,30 @@ func (l *loader)load(ll labeler) error{
 				return nil
 			}
 			log.Printf("meet a pkts file %s\n",path)
-			l.labels[path]=ll(path)
+
+			label:=ll(path)
+			l.labels[path]=label
+			l.labeledFiles[label]=append(l.labeledFiles[label],path)
 			l.files=append(l.files,path)
+
 		}
 		return nil
 	})
+	videoFns:=l.labeledFiles[video]
+	if len(videoFns)==0{
+		log.Println("warn: find no video pkts")
+	}
+	for i:=0;i<l.duplicateFactor;i++{
+		l.files=append(l.files,videoFns...)
+	}
+	//shuffle
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(l.files), func(i, j int) {
+		l.files[i], l.files[j] = l.files[j], l.files[i]
+	})
+	log.Println("shuffle done")
 	return nil
+
 }
 
 func (l *loader)getFlowType(fn string) (res flowType){

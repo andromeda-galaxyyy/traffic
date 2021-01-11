@@ -8,3 +8,4 @@ bin
 pkts/
 *.json
 *.sh
+clspkts

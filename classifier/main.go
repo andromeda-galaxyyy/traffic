@@ -16,10 +16,18 @@ func main()  {
 	redisPort:=flag.Int("rport",6379,"redis port")
 	rdb:=flag.Int("rdb",8,"redis db")
 
+	mode:=flag.Bool("strict",false,"Whether continue to another pkts after sending stats")
+
 
 	selfID:=flag.Int("id",0,"selfID")
 	targetID:=flag.Int("target",1,"targetID")
 	flag.Parse()
+
+	if *mode{
+		log.Println("strict mode")
+	}else{
+		log.Println("not strict mode")
+	}
 
 	log.Printf("selfid:%d\n",*selfID)
 	log.Printf("targeid:%d\n",*targetID)
