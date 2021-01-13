@@ -6,7 +6,7 @@ import (
 )
 
 func main()  {
-	pktsDir:=flag.String("pkts_dir","/home/stack/code/graduate/sim/traffic/pkts/default","pkts dir")
+	pktsDir:=flag.String("pkts_dir","/home/stack/code/graduate/sim/traffic/clspkts","pkts dir")
 	nWorker:=flag.Int("workers",1,"Number of workers")
 	classifierIP:=flag.String("clsip","10.211.55.2","IP of classifier")
 	classifierPort:=flag.Int("clsport",5000,"classifier port")

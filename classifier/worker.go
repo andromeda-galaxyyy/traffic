@@ -257,12 +257,12 @@ func (w *worker)start()  {
 	//shuffle
 	l:=defaultLoader
 	for{
-		if stopped{
+	loop:	if stopped{
 			return
 		}
 		//read line
 		fn:=l.randomPick()
-		//log.Printf("random pick %s\n",fn)
+		log.Printf("random pick %s\n",fn)
 		lines,err:=utils.ReadLines(fn)
 		if nil!=err{
 			log.Printf("invalid pkts file %s\n",fn)
@@ -323,6 +323,7 @@ func (w *worker)start()  {
 						flowstats["idt"]=w.flowIdToPktIdt[flowId]
 						//log.Println("process")
 						go w.processStats(fn,flowstats)
+						goto loop
 					}else{
 						w.flowIdToPktSize[flowId]=append(w.flowIdToPktSize[flowId],float64(size))
 						w.flowIdToPktIdt[flowId]=append(w.flowIdToPktIdt[flowId], tsDiffInFlow)
@@ -357,7 +358,7 @@ func (w *worker)start()  {
 				if err!=nil{
 					log.Printf("error:%s\n",err)
 				}
-				time.Sleep(time.Duration(int(toSleep))*time.Nanosecond)
+				time.Sleep(time.Duration(int(toSleep/2))*time.Nanosecond)
 			}
 		}
 

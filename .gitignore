@@ -5,7 +5,8 @@ bin
 .idea
 .vscode
 *.pkts
-pkts/
+pkts
 *.json
 *.sh
 clspkts
+pkts/voip

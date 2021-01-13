@@ -57,7 +57,7 @@ func GetLinkRate(c *gin.Context)  {
 	}
 	res:=make([]interface{},0)
 	for _,val:=range vals{
-		r,err:=strconv.ParseInt(val,10,64)
+		r,err:=strconv.ParseFloat(val,64)
 		if err!=nil{
 			c.JSON(http.StatusInternalServerError,internalErrorJSON)
 			return

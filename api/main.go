@@ -3,6 +3,7 @@ package main
 import (
 	"chandler.com/gogen/common"
 	"chandler.com/gogen/models"
+	"chandler.com/gogen/utils"
 	"context"
 	"flag"
 	"fmt"
@@ -73,6 +74,15 @@ func setUpRedisHandle(ip string,port int) error  {
 	return nil
 }
 
+func setUpLinkRateRedisHandle(ip string,port int,db int) error  {
+	var err error
+	linkRateRedisHandle,err=utils.NewRedisClient(ip,port,db)
+	if err!=nil{
+		return err
+	}
+	return nil
+}
+
 func setUpTelemetryRedisHandle(ip string,port int) error{
 	telemetryHandle=redis.NewClient(&redis.Options{
 		Addr:fmt.Sprintf("%s:%d", ip,port),
@@ -107,6 +117,11 @@ func main()  {
 	err=setUpTelemetryRedisHandle(rip, rport)
 	if err!=nil{
 		log.Fatalf("Error init network telemetry redis handle\n")
+	}
+
+	err=setUpLinkRateRedisHandle(rip,rport,6)
+	if err!=nil{
+		log.Fatalf("error init link rate redis handle %s\n",err)
 	}
 
 	sigs:=make(chan os.Signal,1)

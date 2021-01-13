@@ -34,7 +34,7 @@ func newLoader(dir string) (l *loader,err error){
 		dir:    dir,
 		labels: make(map[string]flowType),
 		files: make([]string,0),
-		duplicateFactor: 20,
+		duplicateFactor: 300,
 	}
 	l.labeledFiles=make(map[flowType][]string)
 	l.labeledFiles[video]=make([]string,0)

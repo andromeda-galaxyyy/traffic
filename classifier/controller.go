@@ -72,7 +72,6 @@ func (c *controller)init()  {
 			w.doneChan<-common.StopSignal
 		}
 	}()
-
 }
 
 func (c *controller)start()  {

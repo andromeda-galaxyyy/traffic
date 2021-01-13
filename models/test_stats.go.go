@@ -10,6 +10,8 @@ type TestStats struct {
 	TruePositive  float64 `json:"true_positive"`
 	TrueNegative  float64 `json:"true_negative"`
 
+	Precision float64 `json:"precision"`
+
 	PositivePredictValue float64 `json:"positive_predict_value"`
 	FalseDiscoveryRate   float64 `json:"false_discovery_rate"`
 	NegativePredictValue float64 `json:"negative_predict_value"`

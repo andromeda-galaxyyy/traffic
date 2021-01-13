@@ -70,7 +70,7 @@ func (store *LinkRateHandler)init() error  {
 					log.Println(err)
 					continue
 				}
-				log.Printf("new file %s\n", fn)
+				//log.Printf("new file %s\n", fn)
 				for _,line:=range lines{
 					rate:=&models.Rate{
 						Src:    "",
@@ -117,7 +117,8 @@ func NewLinkRateHandler(ip string,port int,rm bool) *LinkRateHandler  {
 }
 
 func (rh *LinkRateHandler)handle(fn string)  {
-	log.Printf("new file %s\n",fn)
+	log.Printf("new file %s send to cache\n",fn)
+
 	rh.cache<-fn
 }
 

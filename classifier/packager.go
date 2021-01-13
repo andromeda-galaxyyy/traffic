@@ -33,7 +33,7 @@ func NewPackager(ip string,port int) *packager {
 	return &packager{
 		flowDescs:      make(chan *flowDesc,10240),
 		cache:          make([]*flowDesc,0),
-		threshold:      50,
+		threshold:      10,
 		classifierIP:   ip,
 		classifierPort: port,
 		doneChan:       make(chan common.Signal,1),
@@ -109,7 +109,17 @@ func (p *packager)queryAndStore(ip string,port int,cache []*flowDesc)  {
 		n_fn:=0
 		n_tn:=0
 
+		n_correct:=0
+		n_false:=0
+
+
+
 		for _,desc:=range cache{
+			if desc.TrueLabel==desc.Pred{
+				n_correct+=1
+			}else{
+				n_false+=1
+			}
 			if desc.TrueLabel==video{
 				if desc.Pred==video{
 					n_tp+=1
@@ -125,6 +135,7 @@ func (p *packager)queryAndStore(ip string,port int,cache []*flowDesc)  {
 			}
 		}
 
+		precision:=float64(n_correct)/float64(len(cache))
 		fp:=0.0
 		if n_tn+n_fp!=0.0{
 			fp=float64(n_fp)/float64(n_tn+n_fp)
@@ -149,6 +160,7 @@ func (p *packager)queryAndStore(ip string,port int,cache []*flowDesc)  {
 			FalseNegative: fn,
 			TruePositive:  tp,
 			TrueNegative:  tn,
+			Precision: precision,
 		}
 		testStr,err:=test.Box()
 		if err!=nil{
@@ -176,7 +188,7 @@ func (p *packager)Start()  {
 			log.Println("Packager stop requested")
 			return
 		case f:=<-p.flowDescs:
-			//log.Println("accept")
+			log.Println("accept")
 			p.cache=append(p.cache,f)
 			if len(p.cache)==p.threshold{
 				tmp:=p.cache
