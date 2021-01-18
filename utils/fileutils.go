@@ -1,3 +1,5 @@
+// +build linux
+
 package utils
 
 import (
@@ -71,7 +73,6 @@ func GetCreatetimeInNano(fn string)(int64,error)  {
 	ctime:=time.Unix(stat.Ctim.Sec,stat.Ctim.Sec)
 	return ctime.UnixNano(),nil
 }
-
 
 
 func RMFile(fn string) error  {

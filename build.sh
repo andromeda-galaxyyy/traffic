@@ -6,4 +6,7 @@
 (cd ./api &&go  build -o ../bin/api && cp ../bin/api /tmp/api)
 (cd ./collector &&go  build -o ../bin/collector && cp ../bin/collector /tmp/collector)
 (cd ./classifier && go build -o ../bin/classifier && cp ../bin/classifier /tmp/classifier)
+(cd ./guiserver && go build -o ../bin/guiserver && cp ../bin/guiserver /tmp/guiserver)
+(cd ./guiserver && GOOS=windows GOARCH=amd64 go build -o ../bin/winguiserver.exe && cp ../bin/winguiserver.exe /tmp/winserver.exe)
+
 (cd ./bin && cp ./* /home/stack/code/graduate/sim/system/traffic/gogen/bin/)
