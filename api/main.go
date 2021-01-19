@@ -142,6 +142,7 @@ func main()  {
 	router.GET("/telemetry/loss",TelemetryFunc(false))
 	router.GET("/telemetry/delay",TelemetryFunc(true))
 	router.GET("/linkrate",TimestampComplete(),GetLinkRate)
+	router.GET("/maxrate",getMaxRate)
 	router.GET("/classifier",TimestampComplete(),getClassifierTestCase)
 
 	server:=&http.Server{

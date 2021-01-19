@@ -72,6 +72,9 @@ func (store *LinkRateHandler)init() error  {
 				}
 				//log.Printf("new file %s\n", fn)
 				for _,line:=range lines{
+					if len(line)==0{
+						continue
+					}
 					rate:=&models.Rate{
 						Src:    "",
 						Dst:    "",

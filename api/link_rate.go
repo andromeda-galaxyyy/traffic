@@ -70,3 +70,47 @@ func GetLinkRate(c *gin.Context)  {
 	})
 	return
 }
+
+func getMaxRate(c *gin.Context)  {
+	// get all keys
+	ctx:=context.Background()
+	var res int=0
+	//var cursor uint64
+	for {
+		var keys []string
+		var err error
+		//keys,cursor,err=linkRateRedisHandle.Scan(ctx,cursor,"",10).Result()
+
+		keys,err=linkRateRedisHandle.Keys(ctx,"*").Result()
+		if err!=nil{
+			c.JSON(http.StatusInternalServerError,internalErrorJSON)
+			return
+		}
+
+
+		for _,key:=range keys{
+			//log.Println(key)
+			vals,err:=linkRateRedisHandle.ZRevRangeByScore(ctx,key,&redis.ZRangeBy{
+				Min: "-inf",
+				Max: "+inf",
+				Count: 1,
+			}).Result()
+			if err!=nil{
+				c.JSON(http.StatusInternalServerError,internalErrorJSON)
+				return
+			}
+			maxRate,err:=strconv.Atoi(vals[0])
+			if err!=nil{
+				c.JSON(http.StatusInternalServerError,internalErrorJSON)
+				return
+			}
+			if maxRate>res{
+				res=maxRate
+			}
+		}
+		c.JSON(http.StatusOK,gin.H{
+			"res":res,
+		})
+		return
+	}
+}
