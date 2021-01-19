@@ -24,8 +24,9 @@ func main()  {
 	redisPort:=flag.Int("rport",6379,"Redis instance port")
 	redisIp:=flag.String("rip","10.211.55.2","Redis instance ip")
 	lossDelayDirs :=flag.String("lossDelayDirs","/tmp/rxloss,/tmp/rxdelay","Directory to watch")
-	linkRateDirs:=flag.String("rateDirs","/tmp/data","Directory to store link rate dirs")
+	linkRateDirs:=flag.String("rate_dirs","/tmp/data","Directory to store link rate dirs")
 	removeFile:=flag.Bool("rm",false,"Whether remove file")
+	trafficMatrixDirs:=flag.String("traffic_dirs","/tmp/data","Directory to store traffic matrix")
 
 	mode:=flag.Int("mode", 0, "Watcher function,0 for delay or loss,1 for link rate")
 
@@ -51,6 +52,7 @@ func main()  {
 
 	enableLossDelayWatch:=false
 	enableLinkRateWatch:=false
+	enableTrafficMatrix:=false
 	if *mode==-1{
 		enableLinkRateWatch=true
 		enableLossDelayWatch=true
@@ -58,6 +60,7 @@ func main()  {
 		enableLossDelayWatch=true
 	}else if *mode==1{
 		enableLinkRateWatch=true
+		enableTrafficMatrix=true
 	}
 
 	if enableLossDelayWatch{
@@ -92,6 +95,15 @@ func main()  {
 		ds, _ := utils.SplitArgs(*linkRateDirs, ",")
 		linkRateDirectories = append(linkRateDirectories, ds...)
 		watchedDirectories=append(watchedDirectories,linkRateDirectories)
+	}
+	if enableTrafficMatrix{
+		log.Println("enable traffic matrix file watcher")
+		preds=append(preds,isTrafficMatrixFile)
+		handlers=append(handlers,NewDefaultTrafficMatrixHandler(*redisIp,*redisPort,*removeFile))
+		trafficDirs:=make([]string,0)
+		ds,_:=utils.SplitArgs(*trafficMatrixDirs,",")
+		trafficDirs=append(trafficDirs,ds...)
+		watchedDirectories=append(watchedDirectories,trafficDirs)
 	}
 
 	log.Printf("handlers %d\n",len(handlers))
