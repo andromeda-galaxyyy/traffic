@@ -168,12 +168,27 @@ func getLoss(c *gin.Context)  {
 	return
 }
 
+
+func getMaxLinkRate(c *gin.Context){
+	var res=0
+	if rand.Float64()<0.5{
+		res=100+rand.Intn(20)
+	}else{
+		res=20+rand.Intn(20)
+	}
+	c.JSON(http.StatusOK,gin.H{
+		"res":res,
+	})
+	return
+}
+
 func main()  {
 	rand.Seed(utils.NowInNano())
 	log.Println("this is gui test server")
 	r:=gin.Default()
 	r.GET("/delay",getDelay)
 	r.GET("/loss",getLoss)
+	r.GET("/maxrate",getMaxLinkRate)
 	server:=&http.Server{
 		Addr: ":10086",
 		Handler: r,
