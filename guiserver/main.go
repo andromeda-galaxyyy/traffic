@@ -3,7 +3,10 @@ package main
 import (
 	"chandler.com/gogen/models"
 	"chandler.com/gogen/utils"
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
@@ -22,6 +25,49 @@ var (
 	}
 
 )
+
+var topo [][]bool
+func init()  {
+	topo=make([][]bool,100)
+	for i:=0;i<100;i++{
+		topo[i]=make([]bool,100)
+	}
+	//load topo
+	log.Println("load topo in current dir/topo.json")
+	fn:="./topo.json"
+	f,err:=ioutil.ReadFile(fn)
+	if err!=nil{
+		log.Fatalln(err)
+	}
+	log.Println("load done")
+	obj:=make(map[string][][][]int)
+	err=json.Unmarshal([]byte(f),&obj)
+	if err!=nil{
+		log.Fatalln(err)
+	}
+	//log.Println(obj)
+	links,ok:=obj["topo"]
+	if !ok{
+		log.Fatalf("invalid file")
+	}
+
+	count:=0
+	for i:=0;i<100;i++{
+		for j:=0;j<100;j++{
+			if links[i][j][0]!=-1{
+				count++
+				topo[i][j]=true
+				topo[j][i]=true
+			}
+		}
+	}
+	if count!=566{
+		panic(count)
+	}
+
+}
+
+
 
 const N=10
 func getDelay(c *gin.Context)  {
@@ -168,6 +214,46 @@ func getLoss(c *gin.Context)  {
 	return
 }
 
+func getTelemetryDelay(c *gin.Context)  {
+	res:=make(map[string]float64)
+	for i:=0;i<100;i++{
+		for j:=0;j<100;j++{
+			if i>=j{
+				continue
+			}
+			if topo[i][j]{
+				delay:=20*rand.Float64()
+				link:=fmt.Sprintf("%d-%d",i,j)
+				//revLink:=fmt.Sprintf("%d-%d",j,i)
+				res[link]=delay
+				//res[revLink]=delay
+			}
+		}
+	}
+	c.JSON(http.StatusOK,res)
+	return
+}
+
+func getTelemetryLoss(c *gin.Context)  {
+	res:=make(map[string]float64)
+	for i:=0;i<100;i++{
+		for j:=0;j<100;j++{
+			if i>=j{
+				continue
+			}
+			if topo[i][j]{
+				loss :=rand.Float64()
+				link:=fmt.Sprintf("%d-%d",i,j)
+				//revLink:=fmt.Sprintf("%d-%d",j,i)
+				res[link]= loss
+				//res[revLink]= loss
+			}
+		}
+	}
+	c.JSON(http.StatusOK,res)
+	return
+}
+
 
 func getMaxLinkRate(c *gin.Context){
 	var res=0
@@ -176,13 +262,30 @@ func getMaxLinkRate(c *gin.Context){
 	}else{
 		res=20+rand.Intn(20)
 	}
-	//c.JSON(http.StatusOK,gin.H{
-	//	"res":res,
-	//})
 
-	resp:=make([]gin.H,0)
-	resp=append(resp,gin.H{"res":res})
-	c.JSON(http.StatusOK,resp)
+	f:=float64(res)/120
+	c.JSON(http.StatusOK,gin.H{
+		"res":f,
+	})
+
+	//resp:=make([]gin.H,0)
+	//resp=append(resp,gin.H{"res":res})
+	//c.JSON(http.StatusOK,resp)
+	return
+}
+
+func getTrafficMatrix(c *gin.Context)  {
+	res:=make(map[string]float64)
+	for i:=0;i<100;i++{
+		for j:=0;j<100;j++{
+			if i==j{
+				continue
+			}
+			key:=fmt.Sprintf("%d-%d",i,j)
+			res[key]=15*rand.Float64()
+		}
+	}
+	c.JSON(http.StatusOK,res)
 	return
 }
 
@@ -193,6 +296,10 @@ func main()  {
 	r.GET("/delay",getDelay)
 	r.GET("/loss",getLoss)
 	r.GET("/maxrate",getMaxLinkRate)
+	r.GET("/telemetry/loss",getTelemetryLoss)
+	r.GET("/telemetry/delay",getTelemetryDelay)
+
+	r.GET("/traffic",getTrafficMatrix)
 	server:=&http.Server{
 		Addr: ":10086",
 		Handler: r,
