@@ -176,9 +176,13 @@ func getMaxLinkRate(c *gin.Context){
 	}else{
 		res=20+rand.Intn(20)
 	}
-	c.JSON(http.StatusOK,gin.H{
-		"res":res,
-	})
+	//c.JSON(http.StatusOK,gin.H{
+	//	"res":res,
+	//})
+
+	resp:=make([]gin.H,0)
+	resp=append(resp,gin.H{"res":res})
+	c.JSON(http.StatusOK,resp)
 	return
 }
 
