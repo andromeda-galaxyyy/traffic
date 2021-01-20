@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -70,6 +71,54 @@ func GetLinkRate(c *gin.Context)  {
 	})
 	return
 }
+
+func getAllLinkRate(c *gin.Context)  {
+	res:=make(map[string]float64)
+	for i:=0;i<len(topo);i++{
+		for j:=0;j<len(topo);j++{
+			if !topo[i][j]{
+				continue
+			}
+			k:=fmt.Sprintf("%d-%d",i,j)
+			res[k]=0
+		}
+	}
+	ctx:=context.Background()
+
+	keys,err:=linkRateRedisHandle.Keys(ctx,"*").Result()
+
+	if err!=nil{
+		c.JSON(http.StatusInternalServerError,internalErrorJSON)
+		return
+	}
+	for _,key:=range keys{
+		vals,err:=linkRateRedisHandle.ZRevRangeByScore(ctx,key,&redis.ZRangeBy{
+			Min: "-inf",
+			Max: "+inf",
+			Count: 1,
+		}).Result()
+		if err!=nil{
+			c.JSON(http.StatusInternalServerError,internalErrorJSON)
+			return
+		}
+		if len(vals)!=1{
+			log.Printf("warn: getAllLinkRate find nothing of key:%s\n",key)
+			continue
+		}
+		rate,err:=strconv.ParseFloat(vals[0],64)
+		if err!=nil{
+			c.JSON(http.StatusInternalServerError,internalErrorJSON)
+			return
+		}
+		res[key]=rate
+	}
+	c.JSON(http.StatusOK,res)
+	return
+
+}
+
+
+
 
 func getMaxRate(c *gin.Context)  {
 	// get all keys
