@@ -289,6 +289,20 @@ func getTrafficMatrix(c *gin.Context)  {
 	return
 }
 
+func getAllLinkRate(c *gin.Context)  {
+	res:=make(map[string]float64)
+	for i:=0;i<100;i++{
+		for j:=0;j<100;j++{
+			if topo[i][j]{
+				k:=fmt.Sprintf("%d-%d",i,j)
+				res[k]=rand.Float64()*100
+			}
+		}
+	}
+	c.JSON(http.StatusOK,res)
+	return
+}
+
 func main()  {
 	rand.Seed(utils.NowInNano())
 	log.Println("this is gui test server")
@@ -298,6 +312,7 @@ func main()  {
 	r.GET("/maxrate",getMaxLinkRate)
 	r.GET("/telemetry/loss",getTelemetryLoss)
 	r.GET("/telemetry/delay",getTelemetryDelay)
+	r.GET("/linkrate",getAllLinkRate)
 
 	r.GET("/traffic",getTrafficMatrix)
 	server:=&http.Server{
