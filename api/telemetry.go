@@ -125,7 +125,7 @@ func TelemetryFunc2(isDelay bool) func(c *gin.Context) {
 			if a>b{
 				kk=fmt.Sprintf("%d-%d",b,a)
 			}
-			vals,err:=linkRateRedisHandle.ZRevRangeByScore(ctx,key,&redis.ZRangeBy{
+			vals,err:=telemetryHandle.ZRevRangeByScore(ctx,key,&redis.ZRangeBy{
 				Min: "-inf",
 				Max:"+inf",
 				Count: 1,
@@ -135,6 +135,7 @@ func TelemetryFunc2(isDelay bool) func(c *gin.Context) {
 				return
 			}
 			if len(vals)!=1{
+				log.Println(len(vals))
 				log.Printf("warn: cannot find value of key:%s\n",key)
 			}
 			rate,err:=strconv.ParseFloat(vals[0],64)
