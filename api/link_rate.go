@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
+	"log"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 var linkRateRedisHandle *redis.Client
@@ -76,7 +76,7 @@ func getAllLinkRate(c *gin.Context)  {
 	res:=make(map[string]float64)
 	for i:=0;i<len(topo);i++{
 		for j:=0;j<len(topo);j++{
-			if i>=j{
+			if !topo[i][j]{
 				continue
 			}
 			k:=fmt.Sprintf("%d-%d",i,j)
@@ -92,26 +92,29 @@ func getAllLinkRate(c *gin.Context)  {
 		return
 	}
 	for _,key:=range keys{
-		nodes:=strings.Split(key,"-")
-		if len(nodes)!=2{
-			c.JSON(http.StatusInternalServerError,internalErrorJSON)
-			return
-		}
-		aa,bb:=nodes[0],nodes[1]
-		a,err:=strconv.Atoi(aa)
+		vals,err:=linkRateRedisHandle.ZRevRangeByScore(ctx,key,&redis.ZRangeBy{
+			Min: "-inf",
+			Max: "+inf",
+			Count: 1,
+		}).Result()
 		if err!=nil{
 			c.JSON(http.StatusInternalServerError,internalErrorJSON)
 			return
 		}
-		b,err:=strconv.Atoi(bb)
+		if len(vals)!=1{
+			log.Printf("warn: getAllLinkRate find nothing of key:%s\n",key)
+			continue
+		}
+		rate,err:=strconv.ParseFloat(vals[0],64)
 		if err!=nil{
 			c.JSON(http.StatusInternalServerError,internalErrorJSON)
 			return
 		}
-		if a>b{
-			a,b=b,a
-		}
+		res[key]=rate
 	}
+	c.JSON(http.StatusOK,res)
+	return
+
 }
 
 

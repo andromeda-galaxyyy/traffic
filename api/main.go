@@ -205,7 +205,7 @@ func main()  {
 	router.GET("/flowcounter",GetFlowCounter)
 	router.GET("/telemetry/loss",TelemetryFunc(false))
 	router.GET("/telemetry/delay",TelemetryFunc(true))
-	router.GET("/linkrate",TimestampComplete(),GetLinkRate)
+	router.GET("/linkrate",getAllLinkRate)
 	router.GET("/maxrate",getMaxRate)
 	router.GET("/classifier",TimestampComplete(),getClassifierTestCase)
 	router.GET("/traffic",getTrafficMatrix)
