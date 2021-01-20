@@ -7,6 +7,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 var linkRateRedisHandle *redis.Client
@@ -70,6 +71,51 @@ func GetLinkRate(c *gin.Context)  {
 	})
 	return
 }
+
+func getAllLinkRate(c *gin.Context)  {
+	res:=make(map[string]float64)
+	for i:=0;i<len(topo);i++{
+		for j:=0;j<len(topo);j++{
+			if i>=j{
+				continue
+			}
+			k:=fmt.Sprintf("%d-%d",i,j)
+			res[k]=0
+		}
+	}
+	ctx:=context.Background()
+
+	keys,err:=linkRateRedisHandle.Keys(ctx,"*").Result()
+
+	if err!=nil{
+		c.JSON(http.StatusInternalServerError,internalErrorJSON)
+		return
+	}
+	for _,key:=range keys{
+		nodes:=strings.Split(key,"-")
+		if len(nodes)!=2{
+			c.JSON(http.StatusInternalServerError,internalErrorJSON)
+			return
+		}
+		aa,bb:=nodes[0],nodes[1]
+		a,err:=strconv.Atoi(aa)
+		if err!=nil{
+			c.JSON(http.StatusInternalServerError,internalErrorJSON)
+			return
+		}
+		b,err:=strconv.Atoi(bb)
+		if err!=nil{
+			c.JSON(http.StatusInternalServerError,internalErrorJSON)
+			return
+		}
+		if a>b{
+			a,b=b,a
+		}
+	}
+}
+
+
+
 
 func getMaxRate(c *gin.Context)  {
 	// get all keys
