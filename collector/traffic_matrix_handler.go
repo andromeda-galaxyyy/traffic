@@ -20,10 +20,10 @@ type trafficMatrixHandler struct {
 	removeFile bool
 }
 
-func (t *trafficMatrixHandler)storeTrafficMatrix(traffic *models.Traffic,score int64)error{
+func (t *trafficMatrixHandler)storeTrafficMatrix(traffics []*models.Traffic,score int64)error{
 	ctx:=context.Background()
-	//pipe:=t.redis.Pipeline()
-	//for _,traffic:=range traffics{
+	pipe:=t.redis.Pipeline()
+	for _,traffic:=range traffics{
 		key:=fmt.Sprintf("%s-%s",traffic.Src,traffic.Dst)
 		//content:=traffic.String()
 		if err:=t.redis.ZAdd(ctx,key,&redis.Z{
@@ -33,11 +33,11 @@ func (t *trafficMatrixHandler)storeTrafficMatrix(traffic *models.Traffic,score i
 			log.Println(err)
 			return err
 		}
-	//}
-	//_,err:=pipe.Exec(ctx)
-	//if err!=nil{
-	//	return err
-	//}
+	}
+	_,err:=pipe.Exec(ctx)
+	if err!=nil{
+		return err
+	}
 	//for _,cmder:=range cmders{
 	//	cmd,ok:=cmder.(*redis.StringCmd)
 	//	if !ok{
@@ -83,7 +83,7 @@ func (h *trafficMatrixHandler)init() error{
 					log.Printf("error when traffic matrix handler get create time of %s\n",fn)
 					continue
 				}
-				//traffics:=make([]*models.Traffic,0)
+				traffics:=make([]*models.Traffic,0)
 				for _,line:=range lines{
 					//empty line
 					if len(line)==0{
@@ -99,11 +99,12 @@ func (h *trafficMatrixHandler)init() error{
 						log.Println(err)
 						continue
 					}
-					if err:=h.storeTrafficMatrix(traffic,ts);err!=nil{
-						log.Printf("error when traffic matrix handler store traffics %s\n",fn)
-						continue
-					}
-					//traffics=append(traffics,traffic)
+
+					traffics=append(traffics,traffic)
+				}
+				if err:=h.storeTrafficMatrix(traffics,ts);err!=nil{
+					log.Printf("error when traffic matrix handler store traffics %s\n",fn)
+					continue
 				}
 
 
