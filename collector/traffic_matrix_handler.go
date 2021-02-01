@@ -78,7 +78,7 @@ func (h *trafficMatrixHandler)init() error{
 					continue
 				}
 				ts,err:=utils.GetCreateTimeInSec(fn)
-				log.Println(ts)
+				//log.Println(ts)
 				if err!=nil{
 					log.Printf("error when traffic matrix handler get create time of %s\n",fn)
 					continue

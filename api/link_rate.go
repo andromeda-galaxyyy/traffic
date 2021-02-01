@@ -123,7 +123,7 @@ func getAllLinkRate(c *gin.Context)  {
 func getMaxRate(c *gin.Context)  {
 	// get all keys
 	ctx:=context.Background()
-	var res int=0
+	var res float64=0
 	//var cursor uint64
 	for {
 		var keys []string
@@ -148,7 +148,8 @@ func getMaxRate(c *gin.Context)  {
 				c.JSON(http.StatusInternalServerError,internalErrorJSON)
 				return
 			}
-			maxRate,err:=strconv.Atoi(vals[0])
+			//maxRate,err:=strconv.Atoi(vals[0])
+			maxRate,err:=strconv.ParseFloat(vals[0],64)
 			if err!=nil{
 				c.JSON(http.StatusInternalServerError,internalErrorJSON)
 				return

@@ -8,6 +8,7 @@ bin
 pkts
 *.json
 *.sh
+test/setup.sh
 clspkts
 static
 pkts/voip
