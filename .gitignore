@@ -12,3 +12,4 @@ test/setup.sh
 clspkts
 static
 pkts/voip
+test/* 

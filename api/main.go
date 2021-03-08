@@ -115,13 +115,15 @@ func loadTopo(fn string) error  {
 	//load topo
 	f,err:=ioutil.ReadFile(fn)
 	if err!=nil{
-		log.Fatalln(err)
+		//log.Fatalln(err)
+		return err
 	}
 	log.Println("load done")
 	obj:=make(map[string][][][]int)
 	err=json.Unmarshal([]byte(f),&obj)
 	if err!=nil{
-		log.Fatalln(err)
+		//log.Fatalln(err)
+		return err
 	}
 	//log.Println(obj)
 	links,ok:=obj["topo"]
@@ -157,7 +159,7 @@ func main()  {
 
 	flag.Parse()
 	if err:=loadTopo(*topoFn);err!=nil{
-		log.Fatalf("error when loading topo file:%s\n",err)
+		log.Printf("error when loading topo file,some api may not functional:%s\n",err)
 	}
 	rport=*redisPort
 	rip=*redisIp
