@@ -36,7 +36,7 @@ func main(){
 	controllerIP:=flag.String("cip","172.16.181.1","Controller ip")
 	controllerSocketPort:=flag.Int("cport",1025,"Controller Socket Port")
 
-	redisIP:=flag.String("rip", "192.168.1.196","Redis IP address")
+	redisIP:=flag.String("rip", "192.168.1.132","Redis IP address")
 	redisPort:=flag.Int("rport",6379, "Redis Port")
 
 	storeFlowCounter:=flag.Bool("storefcounter",false,"Whether store flow counter")
