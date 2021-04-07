@@ -55,6 +55,7 @@ func main()  {
 	enableTrafficMatrix:=false
 	if *mode==-1{
 		enableLinkRateWatch=true
+		enableTrafficMatrix=true
 		enableLossDelayWatch=true
 	}else if *mode==0{
 		enableLossDelayWatch=true

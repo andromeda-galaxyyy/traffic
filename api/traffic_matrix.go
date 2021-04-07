@@ -48,9 +48,10 @@ func getTrafficMatrix(c *gin.Context)  {
 		traffic,err:=strconv.ParseFloat(vals[0],64)
 		res[key]=traffic
 	}
-	c.JSON(http.StatusOK,gin.H{
-		"res":res,
-	})
+	// c.JSON(http.StatusOK,gin.H{
+	// 	// "res":res,
+	// })
+	c.JSON(http.StatusOK, res)
 	return
 
 }
