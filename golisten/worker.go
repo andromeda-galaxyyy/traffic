@@ -218,6 +218,31 @@ func (w *worker) processPacket(packet *gopacket.Packet) {
 			log.Printf("Worker %d:invalid seq number %d>%d\n",w.id,w.seqRecord[specifier],seq)
 		}
 		periodLoss,_:=computeLoss(lossDesc,w.seqRecord[specifier],seq)
+
+		if w.anomalyDetectionConfig!=nil&&periodLoss>w.anomalyDetectionConfig.lossThreshold{
+			log.Println("bloody high loss,report")
+			go func() {
+				log.Println("send to anomaly server")
+				report:=make(map[string]interface{})
+				report["sip"]=specifier[0]
+				report["sport"]=specifier[1]
+				report["dip"]=specifier[2]
+				report["dport"]=specifier[3]
+				report["proto"]=specifier[4]
+				report["loss"]=periodLoss
+				reportBytes,err:=json.Marshal(report)
+				if err!=nil{
+					log.Println("this is bloody wired")
+					return
+				}
+
+				reportStr:=string(reportBytes)+"*"
+				log.Printf("report string  %s\n",reportStr)
+				if nil!=utils.SendStr(w.anomalyDetectionConfig.ip,w.anomalyDetectionConfig.port,&reportStr){
+					log.Println("cannot send to anomaly server")
+				}
+			}()
+		}
 		w.seqRecord[specifier]=seq
 		lossDesc.PeriodLoss=periodLoss
 		w.lossChannel<- lossDesc
