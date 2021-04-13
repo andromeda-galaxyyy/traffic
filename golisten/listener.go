@@ -62,6 +62,7 @@ type Listener struct {
 	delaySampleSize int
 
 	anomalyDetectionConfigP *anomalyDetectionConfig
+	lossWindow int
 }
 
 
@@ -212,6 +213,7 @@ func (l *Listener)Init()  {
 				flushInterval: flushTimeout,
 				enablePeriodFlush: enablePeriodicalFlush,
 				anomalyDetectionConfig: l.anomalyDetectionConfigP,
+				lossWindow: l.lossWindow,
 			}
 
 			//worker.flowWriter=NewDefaultWriter(i,l.DelayBaseDir, worker.delayChannel)

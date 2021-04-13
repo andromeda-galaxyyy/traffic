@@ -47,6 +47,8 @@ type worker struct {
 	flushInterval int64
 
 	anomalyDetectionConfig *anomalyDetectionConfig
+
+	lossWindow int
 }
 
 
@@ -217,7 +219,7 @@ func (w *worker) processPacket(packet *gopacket.Packet) {
 		if w.seqRecord[specifier]>seq{
 			log.Printf("Worker %d:invalid seq number %d>%d\n",w.id,w.seqRecord[specifier],seq)
 		}
-		periodLoss,_:=computeLoss(lossDesc,w.seqRecord[specifier],seq)
+		periodLoss,_:=computeLoss(lossDesc,w.seqRecord[specifier],seq,w.lossWindow)
 
 		if w.anomalyDetectionConfig!=nil&&periodLoss>w.anomalyDetectionConfig.lossThreshold{
 			log.Println("bloody high loss,report")
@@ -367,8 +369,8 @@ only implement period loss now
 如果2 Seq包乱序，Seq先于数据包出现，那么可以根据已经统计的包的数量通过roundup估计出来
 如果更复杂的情况出现，无法估计
  */
-func computeLoss(desc *models.FlowDesc, lastSeqNum int64,currSeqNum int64)(float64,error){
-	estimated1 :=100*(currSeqNum-lastSeqNum)
+func computeLoss(desc *models.FlowDesc, lastSeqNum int64,currSeqNum int64,window int)(float64,error){
+	estimated1 :=int64(window)*(currSeqNum-lastSeqNum)
 
 	return 1-float64(desc.PeriodPackets)/float64(estimated1),nil
 }

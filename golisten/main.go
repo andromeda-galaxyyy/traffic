@@ -45,6 +45,8 @@ func main()  {
 	anomalyDelayThreshold:=flag.Int("anomaly_delay",10,"anomaly delay threshold")
 	anomalyLossThreshold:=flag.Float64("anomaly_loss",0.2,"anomaly loss threshold")
 
+	lossWindow:=flag.Int("loss_window",100,"Window to monitor loss")
+
 
 	flag.Parse()
 
@@ -171,7 +173,7 @@ func main()  {
 		DelayBaseDir: *delayBaseDir,
 		PktLossDir: *pktLossBaseDir,
 		anomalyDetectionConfigP: anomalyDetectionConfigP,
-
+		lossWindow: *lossWindow,
 	}
 	l.Init()
 	l.Start()

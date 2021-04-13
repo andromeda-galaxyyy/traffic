@@ -242,7 +242,7 @@ func (g *generator)sendWithSeq(
 				return 0,0,err
 			}
 			updatedPeriodPktCount++
-			if updatedPeriodPktCount%100==0{
+			if updatedPeriodPktCount%int64(g.lossWindow)==0{
 				updatedSeqNum+=1
 				_=g.sendSeq(isTCP,updatedSeqNum)
 			}
@@ -257,7 +257,7 @@ func (g *generator)sendWithSeq(
 				return 0,0,err
 			}
 			updatedPeriodPktCount++
-			if updatedPeriodPktCount%100==0{
+			if updatedPeriodPktCount%int64(g.lossWindow)==0{
 				updatedSeqNum+=1
 				_=g.sendSeq(isTCP,updatedSeqNum)
 			}
@@ -300,7 +300,7 @@ func (g *generator)sendWithSeq(
 			return 0,0,err
 		}
 		updatedPeriodPktCount++
-		if updatedPeriodPktCount%100==0{
+		if updatedPeriodPktCount%int64(g.lossWindow)==0{
 			updatedSeqNum+=1
 			_=g.sendSeq(isTCP,updatedSeqNum)
 		}
@@ -314,7 +314,7 @@ func (g *generator)sendWithSeq(
 			return 0,0,err
 		}
 		updatedPeriodPktCount++
-		if updatedPeriodPktCount%100==0{
+		if updatedPeriodPktCount%int64(g.lossWindow)==0{
 			updatedSeqNum+=1
 			_=g.sendSeq(isTCP,updatedSeqNum)
 		}

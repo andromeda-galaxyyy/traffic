@@ -57,6 +57,8 @@ func main(){
 
 	vlanid:=flag.Int("vlan",5,"Vlan id")
 
+	lossWindow:=flag.Int("loss_window",100,"Length window to monitor loss")
+
 
 
 	//dumb generator
@@ -228,6 +230,7 @@ func main(){
 			rip:*redisIP,
 			rport:*redisPort,
 			storeFlowCounter: *storeFlowCounter,
+			lossWindow: *lossWindow,
 		}
 
 

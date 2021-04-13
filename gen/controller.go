@@ -52,6 +52,8 @@ type controller struct {
 	rip   string
 	rport int
 
+	lossWindow int
+
 }
 
 func (c *controller) Init() error {
@@ -119,6 +121,7 @@ func (c *controller) Init() error {
 			specifiedPktFn: c.specifiedPktFn,
 			selfLoadPkt: false,
 			lines: lines,
+			lossWindow: c.lossWindow,
 		})
 	}
 

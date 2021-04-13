@@ -91,6 +91,8 @@ type generator struct {
 
 	selfLoadPkt bool
 	lines []string
+
+	lossWindow int
 }
 
 func processStats(nums []float64) (min, max, mean float64) {
@@ -411,7 +413,7 @@ func (g *generator) Start() (err error) {
 							if err != nil {
 								log.Fatal(err)
 							}
-							g.periodPktCount[flowId]=updatedPeriodPktCount%100
+							g.periodPktCount[flowId]=updatedPeriodPktCount%int64(g.lossWindow)
 							g.flowIdToSeq[flowId]=updatedSeqNum
 						}else{
 							err = g.send(
@@ -441,7 +443,7 @@ func (g *generator) Start() (err error) {
 							if err != nil {
 								log.Fatal(err)
 							}
-							g.periodPktCount[flowId]=updatedPeriodPktCount%100
+							g.periodPktCount[flowId]=updatedPeriodPktCount%int64(g.lossWindow)
 							g.flowIdToSeq[flowId]=updatedSeqNum
 						}else{
 							err = g.send(
