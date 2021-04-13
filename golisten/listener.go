@@ -14,6 +14,12 @@ import (
 	"time"
 )
 
+type anomalyDetectionConfig struct {
+	ip string
+	port int
+	delayThreshold int
+	lossThreshold float64
+}
 
 
 var (
@@ -54,6 +60,8 @@ type Listener struct {
 	//delay sample size
 	//延迟采样大小，暂时不用
 	delaySampleSize int
+
+	anomalyDetectionConfigP *anomalyDetectionConfig
 }
 
 
@@ -203,6 +211,7 @@ func (l *Listener)Init()  {
 				id:i,
 				flushInterval: flushTimeout,
 				enablePeriodFlush: enablePeriodicalFlush,
+				anomalyDetectionConfig: l.anomalyDetectionConfigP,
 			}
 
 			//worker.flowWriter=NewDefaultWriter(i,l.DelayBaseDir, worker.delayChannel)

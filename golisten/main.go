@@ -39,6 +39,12 @@ func main()  {
 	enablePeriodFlush:=flag.Bool("flush",true,"Whether enable period flush")
 	flushPeriod:=flag.Int64("interval",5,"Interval between two consecutive flush, in seconds")
 
+	anomaly:=flag.Bool("anomaly",false,"Whether report anomaly condition to controller")
+	anomalyServerIP:=flag.String("anomaly_ip","192.168.1.132","anomaly server report ip")
+	anomalyServerPort:=flag.Int("anomaly_port",1059,"anomaly server port")
+	anomalyDelayThreshold:=flag.Int("anomaly_delay",10,"anomaly delay threshold")
+	anomalyLossThreshold:=flag.Float64("anomaly_loss",0.2,"anomaly loss threshold")
+
 
 	flag.Parse()
 
@@ -140,6 +146,16 @@ func main()  {
 	}
 
 
+	var anomalyDetectionConfigP *anomalyDetectionConfig=nil
+	if *anomaly {
+		anomalyDetectionConfigP=&anomalyDetectionConfig{
+			ip:             *anomalyServerIP,
+			port :          *anomalyServerPort,
+			delayThreshold: *anomalyDelayThreshold,
+			lossThreshold:  *anomalyLossThreshold,
+		}
+	}
+
 
 	l:=&Listener{
 		Intf:          *intf,
@@ -154,6 +170,7 @@ func main()  {
 		SrcIPFile: *srcHostIp,
 		DelayBaseDir: *delayBaseDir,
 		PktLossDir: *pktLossBaseDir,
+		anomalyDetectionConfigP: anomalyDetectionConfigP,
 
 	}
 	l.Init()

@@ -4,6 +4,7 @@ import (
 	"chandler.com/gogen/common"
 	"chandler.com/gogen/models"
 	"chandler.com/gogen/utils"
+	"encoding/json"
 	"fmt"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -13,6 +14,8 @@ import (
 	"sync"
 	"time"
 )
+
+
 
 type worker struct {
 	id int
@@ -42,6 +45,8 @@ type worker struct {
 	enablePeriodFlush bool
 	//刷新间隔
 	flushInterval int64
+
+	anomalyDetectionConfig *anomalyDetectionConfig
 }
 
 
@@ -229,7 +234,7 @@ func (w *worker) processPacket(packet *gopacket.Packet) {
 
 	if flowFinished {
 		//must copied
-		go w.processPktStats(delayDesc,utils.CopyInt64Slice(w.flowDelay[specifier]))
+		go w.processPktStats(delayDesc,utils.CopyInt64Slice(w.flowDelay[specifier]),&specifier)
 		//log.Println("flow finished")
 		delete(w.flowDelay, specifier)
 		delete(w.fTypeRecord, specifier)
@@ -277,7 +282,7 @@ func (w *worker) start(packetChannel chan gopacket.Packet, wg *sync.WaitGroup) {
 
 				for specifier,delays:=range w.flowDelay{
 					desc:=w.fiveTupleToFDescForDelay[specifier]
-					w.processPktStats(desc,delays)
+					w.processPktStats(desc,delays,&specifier)
 				}
 
 				//reset data structure
@@ -320,7 +325,7 @@ func (w *worker) start(packetChannel chan gopacket.Packet, wg *sync.WaitGroup) {
 func (w *worker) completeFlush() {
 	for specifier, delays := range w.flowDelay {
 		desc:=w.fiveTupleToFDescForDelay[specifier]
-		w.processPktStats(desc,delays)
+		w.processPktStats(desc,delays,&specifier)
 	}
 }
 
@@ -347,7 +352,7 @@ func computeLoss(desc *models.FlowDesc, lastSeqNum int64,currSeqNum int64)(float
 
 
 
-func (w *worker) processPktStats(desc *models.FlowDesc,delays []int64) {
+func (w *worker) processPktStats(desc *models.FlowDesc,delays []int64,specifier *[5]string) {
 	//find min,max,average,stdvar
 	min := int64(math.MaxInt64)
 	max := int64(math.MinInt64)
@@ -394,4 +399,30 @@ func (w *worker) processPktStats(desc *models.FlowDesc,delays []int64) {
 	desc.RxEndTs=utils.NowInMilli()
 
 	w.delayChannel <-desc
+	if nil!=w.anomalyDetectionConfig && desc.MaxDelay>int64(w.anomalyDetectionConfig.delayThreshold){
+		log.Printf("anomaly report %d\n",desc.MaxDelay)
+		go func() {
+			log.Println("send to anomaly server")
+			report:=make(map[string]interface{})
+			report["sip"]=specifier[0]
+			report["sport"]=specifier[1]
+			report["dip"]=specifier[2]
+			report["dport"]=specifier[3]
+			report["proto"]=specifier[4]
+			report["max_delay"]=desc.MaxDelay
+			reportBytes,err:=json.Marshal(report)
+			if err!=nil{
+				log.Println("this is bloody wired")
+				return
+			}
+
+			reportStr:=string(reportBytes)+"*"
+			log.Printf("report string  %s\n",reportStr)
+			if nil!=utils.SendStr(w.anomalyDetectionConfig.ip,w.anomalyDetectionConfig.port,&reportStr){
+				log.Println("cannot send to anomaly server")
+			}
+		}()
+	}
 }
+
+
