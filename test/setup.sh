@@ -72,9 +72,9 @@ iptables -t nat -A POSTROUTING -s 10.1.0.0/16 -o enp0s5 -j MASQUERADE
 
  ip netns exec h0 tc qdisc add dev h0-eth0 root handle 5:0 hfsc default 1
  ip netns exec h0 tc class add dev h0-eth0 parent 5:0 classid 5:1 hfsc sc rate 500Mbit ul rate 500Mbit
-#  ip netns exec h0 tc qdisc add dev h0-eth0 parent 5:1 handle 10: netem delay 15ms
+  ip netns exec h0 tc qdisc add dev h0-eth0 parent 5:1 handle 10: netem delay 15ms loss 20
 # ip netns exec h0 tc qdisc add dev h0-eth0 parent 5:1 handle 10: netem delay 15ms
-ip netns exec h0 tc qdisc add dev h0-eth0 parent 5:1 handle 10: netem loss 20
+#ip netns exec h0 tc qdisc add dev h0-eth0 parent 5:1 handle 10: netem loss 20
 
 # ip netns exec h1 tc qdisc add dev h1-eth0 root handle 5:0 hfsc default 1
 # ip netns exec h1 tc class add dev h1-eth0 parent 5:0 classid 5:1 hfsc sc rate 500Mbit ul rate 500Mbit
