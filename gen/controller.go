@@ -4,6 +4,7 @@ import (
 	"chandler.com/gogen/common"
 	"chandler.com/gogen/models"
 	"chandler.com/gogen/utils"
+	"fmt"
 	"github.com/google/gopacket"
 	"io/ioutil"
 	"log"
@@ -11,6 +12,7 @@ import (
 	"os"
 	"os/signal"
 	"path"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -87,6 +89,8 @@ func (c *controller) Init() error {
 	if err!=nil{
 		log.Fatalf("Error reading pkt file %s\n", pktFile)
 	}
+
+	go c.parseForPrediction(lines)
 
 	for i := 0; i < c.numWorkers; i++ {
 		if len(c.specifiedPktFn)!=0{
@@ -175,10 +179,55 @@ func (c *controller) Init() error {
 			}
 		}()
 	}
-
-
 	return nil
 }
+
+
+func (c *controller) parseForPrediction(lines []string){
+	fn:="/tmp/for_prediction"
+	if utils.FileExist(fn){
+		log.Printf("file exists %s,now delete\n",fn)
+		utils.RMFile(fn)
+	}
+	//volumes:=make([]int,0)
+	current_sum:=0
+	current_interval:=0.0
+
+	for {
+
+		for _, l := range lines {
+			contents := strings.Split(l, " ")
+			interval, err := strconv.ParseFloat(contents[0], 64)
+			if err != nil {
+				log.Fatalf("error parse file %s interval\n", fn)
+			}
+			size, err := strconv.Atoi(contents[1])
+			if err != nil {
+				log.Fatalf("error parse file %s size\n", fn)
+			}
+			current_interval += interval
+			current_sum += size
+			if current_interval >= 5*1e9 {
+				//we need to flush
+				f, err := os.OpenFile(fn, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+				if err != nil {
+					log.Fatalf("error when open file %s\n", fn)
+				}
+				defer f.Close()
+				if _, err = f.WriteString(fmt.Sprintln(strconv.Itoa(current_sum))); err != nil {
+					log.Fatalf("error write to file %s\n", f)
+				}
+				current_sum = 0
+				current_interval = 0
+				log.Println("flush once")
+				time.Sleep(5 * time.Second)
+			}
+		}
+	}
+
+}
+
+
 
 func (c *controller) Start() error {
 	for _, g := range c.workers {
