@@ -24,7 +24,7 @@ type anomalyDetectionConfig struct {
 
 var (
 	snapshotLen           int32 =1500
-	promiscuous                     = false
+	promiscuous                     = true
 	timeout                             =30*time.Second
 	delayBaseDir          string
 	pktLossBaseDir        string
@@ -142,6 +142,7 @@ func (l *Listener)startDispatcher(sigChan chan common.Signal)  {
 				}
 
 				if !stopRequested{
+					//log.Println("received")
 					l.packetChannels[int(net.NetworkFlow().FastHash())&(l.NWorker-1)]<-packet
 				}
 			}
