@@ -24,7 +24,7 @@ type anomalyDetectionConfig struct {
 
 var (
 	snapshotLen           int32 =1500
-	promiscuous                     = false
+	promiscuous                     = true
 	timeout                             =30*time.Second
 	delayBaseDir          string
 	pktLossBaseDir        string
