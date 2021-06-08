@@ -57,6 +57,10 @@ func main(){
 
 	vlanid:=flag.Int("vlan",5,"Vlan id")
 
+	enableVolumeStats:=flag.Bool("stats",false,"Whether enable traffic stats")
+
+	volumeStatsDir:=flag.String("statsdir","/tmp/volume.stats","Directory to store volume stats")
+
 
 
 	//dumb generator
@@ -228,6 +232,8 @@ func main(){
 			rip:*redisIP,
 			rport:*redisPort,
 			storeFlowCounter: *storeFlowCounter,
+			volumeStats: *enableVolumeStats,
+			volumeStatsDir: *volumeStatsDir,
 		}
 
 
